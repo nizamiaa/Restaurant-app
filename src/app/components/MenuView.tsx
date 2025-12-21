@@ -167,35 +167,38 @@ export function MenuView({ onBack }: MenuViewProps) {
       </header>
 
       {/* Search and Filter */}
-      <div className="bg-white shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 py-4">
-          <div className="flex flex-col md:flex-row gap-4 items-center">
-            <div className="flex gap-2 flex-1">
+      <div className="bg-gradient-to-r from-red-50 to-red-100 shadow-md">
+        <div className="max-w-7xl mx-auto px-4 py-6">
+          <div className="flex flex-col lg:flex-row gap-6 items-center justify-center">
+            <div className="flex items-center bg-white rounded-full shadow-sm border border-gray-200 overflow-hidden w-full max-w-md">
               <input
                 type="text"
-                placeholder="Axtar..."
+                placeholder="Yemək axtar..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-600"
+                className="flex-1 px-4 py-3 focus:outline-none"
               />
               <button
                 onClick={() => setSearchQuery(searchInput)}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+                className="bg-red-600 text-white px-6 py-3 hover:bg-red-700 transition font-semibold"
               >
                 Axtar
               </button>
             </div>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-600"
-            >
-              {allCategories.map((cat) => (
-                <option key={cat} value={cat}>
-                  {cat}
-                </option>
-              ))}
-            </select>
+            <div className="flex items-center gap-2">
+              <label className="text-gray-700 font-medium">Kateqoriya:</label>
+              <select
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
+                className="border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-600 bg-white"
+              >
+                {allCategories.map((cat) => (
+                  <option key={cat} value={cat}>
+                    {cat}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
       </div>
