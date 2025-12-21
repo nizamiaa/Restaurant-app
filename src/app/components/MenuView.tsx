@@ -208,9 +208,11 @@ export function MenuView({ onBack }: MenuViewProps) {
               key={item.id}
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
             >
-              <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                <span className="text-gray-500">Şəkil yoxdur</span>
-              </div>
+              <img
+                src={item.image}
+                alt={item.name}
+                className="w-full h-48 object-cover"
+              />
               <div className="p-4">
                 <h3 className="font-bold text-lg mb-2">{item.name}</h3>
                 <p className="text-gray-600 text-sm mb-4">
