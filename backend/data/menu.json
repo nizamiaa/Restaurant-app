@@ -19,5 +19,110 @@
     "description": "Romaine, croutons, parmesan",
     "price": 7.0,
     "category": "Salad"
+  },
+  {
+    "id": 4,
+    "name": "Pepperoni Pizza",
+    "description": "Tomato, mozzarella, pepperoni",
+    "price": 9.5,
+    "category": "Pizza"
+  },
+  {
+    "id": 5,
+    "name": "Lasagna",
+    "description": "Layers of pasta, meat sauce, cheese",
+    "price": 12.0,
+    "category": "Pasta"
+  },
+  {
+    "id": 6,
+    "name": "Greek Salad",
+    "description": "Tomatoes, cucumbers, feta, olives",
+    "price": 8.0,
+    "category": "Salad"
+  },
+  {
+    "id": 7,
+    "name": "Cheeseburger",
+    "description": "Beef patty, cheese, lettuce, tomato",
+    "price": 11.0,
+    "category": "Burgers"
+  },
+  {
+    "id": 8,
+    "name": "Chicken Wings",
+    "description": "Spicy buffalo wings with ranch",
+    "price": 9.0,
+    "category": "Appetizers"
+  },
+  {
+    "id": 9,
+    "name": "Tiramisu",
+    "description": "Coffee-flavored Italian dessert",
+    "price": 6.0,
+    "category": "Desserts"
+  },
+  {
+    "id": 10,
+    "name": "Cappuccino",
+    "description": "Espresso with steamed milk foam",
+    "price": 4.0,
+    "category": "Drinks"
+  },
+  {
+    "id": 11,
+    "name": "Vegetarian Pizza",
+    "description": "Tomato, mozzarella, veggies",
+    "price": 9.0,
+    "category": "Pizza"
+  },
+  {
+    "id": 12,
+    "name": "Penne Arrabbiata",
+    "description": "Tomato sauce, chili, garlic",
+    "price": 9.5,
+    "category": "Pasta"
+  },
+  {
+    "id": 13,
+    "name": "Quinoa Salad",
+    "description": "Quinoa, avocado, cherry tomatoes",
+    "price": 8.5,
+    "category": "Salad"
+  },
+  {
+    "id": 14,
+    "name": "BBQ Burger",
+    "description": "Beef patty, BBQ sauce, bacon",
+    "price": 12.0,
+    "category": "Burgers"
+  },
+  {
+    "id": 15,
+    "name": "Mozzarella Sticks",
+    "description": "Fried cheese sticks with marinara",
+    "price": 7.0,
+    "category": "Appetizers"
+  },
+  {
+    "id": 16,
+    "name": "Chocolate Cake",
+    "description": "Rich chocolate cake with frosting",
+    "price": 5.5,
+    "category": "Desserts"
+  },
+  {
+    "id": 17,
+    "name": "Latte",
+    "description": "Espresso with steamed milk",
+    "price": 4.5,
+    "category": "Drinks"
+  },
+  {
+    "id": 18,
+    "name": "Hawaiian Pizza",
+    "description": "Tomato, mozzarella, ham, pineapple",
+    "price": 10.0,
+    "category": "Pizza"
   }
 ]

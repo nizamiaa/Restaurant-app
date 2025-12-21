@@ -26,6 +26,8 @@ export function MenuView({ onBack }: MenuViewProps) {
   const [customerName, setCustomerName] = useState("");
   const [tableNumber, setTableNumber] = useState("");
   const [orderSuccess, setOrderSuccess] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string>("All");
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     fetchMenu();
@@ -112,6 +114,14 @@ export function MenuView({ onBack }: MenuViewProps) {
   };
 
   const categories = [...new Set(menu.map((item) => item.category))];
+  const allCategories = ["All", ...categories];
+
+  const filteredMenu = menu.filter((item) => {
+    const matchesCategory = selectedCategory === "All" || item.category === selectedCategory;
+    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          item.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   if (loading) {
     return (
@@ -155,49 +165,68 @@ export function MenuView({ onBack }: MenuViewProps) {
         </div>
       </header>
 
-      {/* Menu */}
-      <main className="max-w-7xl mx-auto px-4 py-8">
-        {categories.map((category) => (
-          <div key={category} className="mb-12">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800 border-b-2 border-red-600 pb-2">
-              {category}
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {menu
-                .filter((item) => item.category === category)
-                .map((item) => (
-                  <div
-                    key={item.id}
-                    className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
-                  >
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-48 object-cover"
-                    />
-                    <div className="p-4">
-                      <h3 className="font-bold text-lg mb-2">{item.name}</h3>
-                      <p className="text-gray-600 text-sm mb-4">
-                        {item.description}
-                      </p>
-                      <div className="flex justify-between items-center">
-                        <span className="text-red-600 font-bold text-xl">
-                          ₼{item.price.toFixed(2)}
-                        </span>
-                        <button
-                          onClick={() => addToCart(item)}
-                          className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition flex items-center gap-2"
-                        >
-                          <Plus className="size-4" />
-                          Əlavə et
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+      {/* Search and Filter */}
+      <div className="bg-white shadow-sm">
+        <div className="max-w-7xl mx-auto px-4 py-4">
+          <div className="flex flex-col md:flex-row gap-4 items-center">
+            <input
+              type="text"
+              placeholder="Axtar..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1 border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-red-600"
+            />
+            <div className="flex gap-2 flex-wrap">
+              {allCategories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-4 py-2 rounded-lg font-semibold transition ${
+                    selectedCategory === cat
+                      ? "bg-red-600 text-white"
+                      : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
             </div>
           </div>
-        ))}
+        </div>
+      </div>
+
+      {/* Menu */}
+      <main className="max-w-7xl mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredMenu.map((item) => (
+            <div
+              key={item.id}
+              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
+            >
+              <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+                <span className="text-gray-500">Şəkil yoxdur</span>
+              </div>
+              <div className="p-4">
+                <h3 className="font-bold text-lg mb-2">{item.name}</h3>
+                <p className="text-gray-600 text-sm mb-4">
+                  {item.description}
+                </p>
+                <div className="flex justify-between items-center">
+                  <span className="text-red-600 font-bold text-xl">
+                    ₼{item.price.toFixed(2)}
+                  </span>
+                  <button
+                    onClick={() => addToCart(item)}
+                    className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition flex items-center gap-2"
+                  >
+                    <Plus className="size-4" />
+                    Əlavə et
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
       </main>
 
       {/* Cart Modal */}
