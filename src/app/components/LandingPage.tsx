@@ -2,11 +2,10 @@ import { ChefHat, QrCode, ShoppingBag, Clock, Star, MapPin, Phone, Mail, Menu as
 
 interface LandingPageProps {
   onViewMenu: () => void;
-  onAdminAccess: () => void;
   onViewFeedback: () => void;
 }
 
-export function LandingPage({ onViewMenu, onAdminAccess, onViewFeedback }: LandingPageProps) {
+export function LandingPage({ onViewMenu, onViewFeedback }: LandingPageProps) {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}

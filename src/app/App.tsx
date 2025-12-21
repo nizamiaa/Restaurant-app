@@ -10,12 +10,12 @@ export default function App() {
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
 
   useEffect(() => {
-    // Check URL for admin access or direct menu access
+    // Check URL for admin access, direct menu access, or admin path
     if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get("admin") === "true") {
+      const url = new URL(window.location.href);
+      if (url.pathname === "/admin" || url.searchParams.get("admin") === "true") {
         setView("login");
-      } else if (params.get("menu") === "true") {
+      } else if (url.searchParams.get("menu") === "true") {
         setView("customer");
       }
     }
@@ -35,10 +35,6 @@ export default function App() {
     setView("customer");
   };
 
-  const handleAdminAccess = () => {
-    setView("login");
-  };
-
   const handleViewFeedback = () => {
     setView("feedback");
   };
@@ -52,7 +48,6 @@ export default function App() {
       {view === "landing" && (
         <LandingPage 
           onViewMenu={handleViewMenu}
-          onAdminAccess={handleAdminAccess}
           onViewFeedback={handleViewFeedback}
         />
       )}
