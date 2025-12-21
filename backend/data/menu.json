@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "name": "Margherita Pizza",
+    "description": "Tomato, mozzarella, basil",
+    "price": 8.5,
+    "category": "Pizza"
+  },
+  {
+    "id": 2,
+    "name": "Spaghetti Carbonara",
+    "description": "Pancetta, egg, pecorino",
+    "price": 10.0,
+    "category": "Pasta"
+  },
+  {
+    "id": 3,
+    "name": "Caesar Salad",
+    "description": "Romaine, croutons, parmesan",
+    "price": 7.0,
+    "category": "Salad"
+  }
+]
