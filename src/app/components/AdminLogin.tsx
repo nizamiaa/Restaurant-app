@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Lock } from "lucide-react";
+import { toast } from "sonner";
 
 interface AdminLoginProps {
   onLogin: () => void;
@@ -7,7 +8,6 @@ interface AdminLoginProps {
 
 export function AdminLogin({ onLogin }: AdminLoginProps) {
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,7 +20,7 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
       if (response.ok) {
         onLogin();
       } else {
-        setError('Yanlış şifrə');
+        toast.error("Yanlış şifrə");
         setPassword('');
       }
     } catch (error) {
@@ -50,14 +50,10 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
             <input
               type="password"
               value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                setError("");
-              }}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Admin şifrəsini daxil edin"
               className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-600"
             />
-            {error && <p className="text-red-600 text-sm mt-2">{error}</p>}
           </div>
 
           <button

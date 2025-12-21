@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { ShoppingCart, Plus, Minus, CircleCheckBig, ArrowLeft } from "lucide-react";
+import { toast } from "sonner";
 
 interface MenuItem {
   id: string;
@@ -78,7 +79,7 @@ export function MenuView({ onBack }: MenuViewProps) {
 
   const handleOrder = async () => {
     if (!customerName || !tableNumber || cart.length === 0) {
-      alert("Zəhmət olmasa bütün məlumatları doldurun");
+      toast.error("Zəhmət olmasa bütün məlumatları doldurun");
       return;
     }
 
@@ -110,7 +111,7 @@ export function MenuView({ onBack }: MenuViewProps) {
       }
     } catch (error) {
       console.error("Sifariş göndərilərkən xəta:", error);
-      alert("Sifariş göndərilərkən xəta baş verdi");
+      toast.error("Sifariş göndərilərkən xəta baş verdi");
     }
   };
 

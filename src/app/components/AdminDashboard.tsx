@@ -7,6 +7,7 @@ import {
   ShoppingBag,
   LogOut,
 } from "lucide-react";
+import { toast } from "sonner";
 
 interface MenuItem {
   id: string;
@@ -80,7 +81,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
 
   const handleAddMenuItem = async () => {
     if (!formData.name || !formData.price || !formData.category) {
-      alert("Zəhmət olmasa bütün məlumatları doldurun");
+      toast.error("Zəhmət olmasa bütün məlumatları doldurun");
       return;
     }
 
@@ -110,7 +111,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
       });
     } catch (error) {
       console.error("Məhsul əlavə edilərkən xəta:", error);
-      alert("Xəta baş verdi");
+      toast.error("Xəta baş verdi");
     } finally {
       setLoading(false);
     }
@@ -146,7 +147,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
       });
     } catch (error) {
       console.error("Məhsul yenilənərkən xəta:", error);
-      alert("Xəta baş verdi");
+      toast.error("Xəta baş verdi");
     } finally {
       setLoading(false);
     }
@@ -165,7 +166,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
       setMenu(data);
     } catch (error) {
       console.error("Məhsul silinərkən xəta:", error);
-      alert("Xəta baş verdi");
+      toast.error("Xəta baş verdi");
     }
   };
 
@@ -198,7 +199,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
       fetchOrders();
     } catch (error) {
       console.error("Sifariş silinərkən xəta:", error);
-      alert("Xəta baş verdi");
+      toast.error("Xəta baş verdi");
     }
   };
 
