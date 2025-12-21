@@ -3,9 +3,10 @@ import { ChefHat, QrCode, ShoppingBag, Clock, Star, MapPin, Phone, Mail, Menu as
 interface LandingPageProps {
   onViewMenu: () => void;
   onAdminAccess: () => void;
+  onViewFeedback: () => void;
 }
 
-export function LandingPage({ onViewMenu, onAdminAccess }: LandingPageProps) {
+export function LandingPage({ onViewMenu, onAdminAccess, onViewFeedback }: LandingPageProps) {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -31,6 +32,12 @@ export function LandingPage({ onViewMenu, onAdminAccess }: LandingPageProps) {
               className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white hover:text-red-600 transition transform hover:scale-105"
             >
               Admin girişi
+            </button>
+            <button
+              onClick={onViewFeedback}
+              className="bg-gray-100 text-red-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-200 transition transform hover:scale-105 shadow-lg"
+            >
+              Rəy və təkliflər
             </button>
           </div>
         </div>

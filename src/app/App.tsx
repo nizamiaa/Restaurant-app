@@ -3,9 +3,10 @@ import { LandingPage } from "./components/LandingPage";
 import { MenuView } from "./components/MenuView";
 import { AdminDashboard } from "./components/AdminDashboard";
 import { AdminLogin } from "./components/AdminLogin";
+import { Feedback } from "./components/Feedback";
 
 export default function App() {
-  const [view, setView] = useState<"landing" | "customer" | "admin" | "login">("landing");
+  const [view, setView] = useState<"landing" | "customer" | "admin" | "login" | "feedback">("landing");
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
 
   useEffect(() => {
@@ -38,6 +39,10 @@ export default function App() {
     setView("login");
   };
 
+  const handleViewFeedback = () => {
+    setView("feedback");
+  };
+
   const handleBackToLanding = () => {
     setView("landing");
   };
@@ -48,6 +53,7 @@ export default function App() {
         <LandingPage 
           onViewMenu={handleViewMenu}
           onAdminAccess={handleAdminAccess}
+          onViewFeedback={handleViewFeedback}
         />
       )}
       {view === "login" && <AdminLogin onLogin={handleAdminLogin} />}
@@ -55,6 +61,7 @@ export default function App() {
         <AdminDashboard onLogout={handleAdminLogout} />
       )}
       {view === "customer" && <MenuView onBack={handleBackToLanding} />}
+      {view === "feedback" && <Feedback onBack={handleBackToLanding} />}
     </div>
   );
 }

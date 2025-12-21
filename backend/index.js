@@ -11,8 +11,10 @@ const PORT = process.env.PORT || 4000;
 const dataDir = path.join(__dirname, 'data');
 const menuPath = path.join(dataDir, 'menu.json');
 const ordersPath = path.join(dataDir, 'orders.json');
+const feedbackPath = path.join(dataDir, 'feedback.json');
 
 let orders = [];
+let feedback = [];
 
 const readMenu = () => {
   try {
@@ -38,8 +40,21 @@ const saveOrders = (orders) => {
   fs.writeFileSync(ordersPath, JSON.stringify(orders, null, 2));
 };
 
-// Load orders on startup
+const readFeedback = () => {
+  try {
+    return JSON.parse(fs.readFileSync(feedbackPath, 'utf8'));
+  } catch {
+    return [];
+  }
+};
+
+const saveFeedback = (feedback) => {
+  fs.writeFileSync(feedbackPath, JSON.stringify(feedback, null, 2));
+};
+
+// Load orders and feedback on startup
 orders = loadOrders();
+feedback = readFeedback();
 
 app.get('/api/menu', (req, res) => {
   res.json(readMenu());
@@ -106,6 +121,18 @@ app.delete('/api/orders/:id', (req, res) => {
   orders = orders.filter(o => o.id != req.params.id);
   saveOrders(orders);
   res.json({ success: true });
+});
+
+app.get('/api/feedback', (req, res) => {
+  res.json(feedback);
+});
+
+app.post('/api/feedback', (req, res) => {
+  const newFeedback = req.body || {};
+  newFeedback.id = Date.now().toString();
+  feedback.push(newFeedback);
+  saveFeedback(feedback);
+  res.status(201).json(newFeedback);
 });
 
 app.get('/', (req, res) => {

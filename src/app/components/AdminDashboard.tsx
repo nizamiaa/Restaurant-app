@@ -6,6 +6,7 @@ import {
   Package,
   ShoppingBag,
   LogOut,
+  MessageSquare,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -39,14 +40,24 @@ interface Order {
   createdAt: string;
 }
 
+interface Feedback {
+  id: string;
+  name: string;
+  email?: string;
+  type: "comment" | "suggestion" | "complaint";
+  message: string;
+  createdAt: string;
+}
+
 interface AdminDashboardProps {
   onLogout: () => void;
 }
 
 export function AdminDashboard({ onLogout }: AdminDashboardProps) {
-  const [activeTab, setActiveTab] = useState<"menu" | "orders">("orders");
+  const [activeTab, setActiveTab] = useState<"menu" | "orders" | "feedback">("orders");
   const [menu, setMenu] = useState<MenuItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [feedback, setFeedback] = useState<Feedback[]>([]);
   const [loading, setLoading] = useState(false);
   const [showMenuModal, setShowMenuModal] = useState(false);
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
@@ -63,6 +74,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
   useEffect(() => {
     fetchMenu();
     fetchOrders();
+    fetchFeedback();
     const interval = setInterval(fetchOrders, 10000); // Refresh orders every 10 seconds
     return () => clearInterval(interval);
   }, []);
@@ -89,6 +101,16 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
       oldOrders.forEach((order: Order) => deleteOldOrder(order.id));
     } catch (error) {
       console.error("Sifarişlər yüklənərkən xəta:", error);
+    }
+  };
+
+  const fetchFeedback = async () => {
+    try {
+      const response = await fetch('http://localhost:4000/api/feedback');
+      const data = await response.json();
+      setFeedback(data);
+    } catch (error) {
+      console.error("Rəylər yüklənərkən xəta:", error);
     }
   };
 
@@ -322,6 +344,17 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
             <Package className="size-5" />
             Menyu İdarəsi
           </button>
+          <button
+            onClick={() => setActiveTab("feedback")}
+            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
+              activeTab === "feedback"
+                ? "bg-red-600 text-white"
+                : "bg-white text-gray-700 hover:bg-gray-100"
+            }`}
+          >
+            <MessageSquare className="size-5" />
+            Rəylər
+          </button>
         </div>
 
         {/* Orders Tab */}
@@ -474,6 +507,46 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* Feedback Tab */}
+        {activeTab === "feedback" && (
+          <div>
+            <h2 className="text-2xl font-bold mb-6">Müştəri Rəyləri</h2>
+            {feedback.length === 0 ? (
+              <div className="bg-white rounded-lg p-12 text-center">
+                <MessageSquare className="size-16 text-gray-300 mx-auto mb-4" />
+                <p className="text-gray-500">Hələ rəy yoxdur</p>
+              </div>
+            ) : (
+              <div className="grid gap-6">
+                {feedback.map((item) => (
+                  <div key={item.id} className="bg-white rounded-lg shadow p-6">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <h3 className="font-bold text-lg">{item.name}</h3>
+                        {item.email && (
+                          <p className="text-sm text-gray-600">{item.email}</p>
+                        )}
+                        <p className="text-sm text-gray-500 mt-1">
+                          {new Date(item.createdAt).toLocaleString('az-AZ')}
+                        </p>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        item.type === 'comment' ? 'bg-blue-100 text-blue-800' :
+                        item.type === 'suggestion' ? 'bg-green-100 text-green-800' :
+                        'bg-red-100 text-red-800'
+                      }`}>
+                        {item.type === 'comment' ? 'Rəy' :
+                         item.type === 'suggestion' ? 'Təklif' : 'Şikayət'}
+                      </span>
+                    </div>
+                    <p className="text-gray-700">{item.message}</p>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
