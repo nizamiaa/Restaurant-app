@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { ShoppingCart, Plus, Minus, CircleCheckBig, ArrowLeft } from "lucide-react";
-import { projectId, publicAnonKey } from "../../../utils/supabase/info";
 
 interface MenuItem {
   id: string;
@@ -34,14 +33,7 @@ export function MenuView({ onBack }: MenuViewProps) {
 
   const fetchMenu = async () => {
     try {
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-443fc9b4/menu`,
-        {
-          headers: {
-            Authorization: `Bearer ${publicAnonKey}`,
-          },
-        }
-      );
+      const response = await fetch('http://localhost:4000/api/menu');
       const data = await response.json();
       setMenu(data);
     } catch (error) {
@@ -88,13 +80,11 @@ export function MenuView({ onBack }: MenuViewProps) {
     }
 
     try {
-      const response = await fetch(
-        `https://${projectId}.supabase.co/functions/v1/make-server-443fc9b4/orders`,
+      const response = await fetch('http://localhost:4000/api/orders',
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${publicAnonKey}`,
           },
           body: JSON.stringify({
             customerName,

@@ -10,6 +10,7 @@ app.use(express.json());
 const PORT = process.env.PORT || 4000;
 const dataDir = path.join(__dirname, 'data');
 const menuPath = path.join(dataDir, 'menu.json');
+const ordersPath = path.join(dataDir, 'orders.json');
 
 let orders = [];
 
@@ -24,6 +25,21 @@ const readMenu = () => {
 const writeMenu = (menu) => {
   fs.writeFileSync(menuPath, JSON.stringify(menu, null, 2));
 };
+
+const loadOrders = () => {
+  try {
+    return JSON.parse(fs.readFileSync(ordersPath, 'utf8'));
+  } catch {
+    return [];
+  }
+};
+
+const saveOrders = (orders) => {
+  fs.writeFileSync(ordersPath, JSON.stringify(orders, null, 2));
+};
+
+// Load orders on startup
+orders = loadOrders();
 
 app.get('/api/menu', (req, res) => {
   res.json(readMenu());
@@ -74,6 +90,7 @@ app.post('/api/orders', (req, res) => {
   order.status = 'received';
   order.createdAt = new Date().toISOString();
   orders.push(order);
+  saveOrders(orders);
   res.status(201).json(order);
 });
 
@@ -81,11 +98,13 @@ app.put('/api/orders/:id', (req, res) => {
   const order = orders.find(o => o.id == req.params.id);
   if (!order) return res.status(404).json({ error: 'not found' });
   order.status = req.body.status;
+  saveOrders(orders);
   res.json(order);
 });
 
 app.delete('/api/orders/:id', (req, res) => {
   orders = orders.filter(o => o.id != req.params.id);
+  saveOrders(orders);
   res.json({ success: true });
 });
 
