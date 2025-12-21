@@ -8,6 +8,17 @@ import {
   LogOut,
 } from "lucide-react";
 import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/app/components/ui/alert-dialog";
 
 interface MenuItem {
   id: string;
@@ -46,6 +57,8 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
     category: "",
     image: "",
   });
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [orderToDelete, setOrderToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     fetchMenu();
@@ -187,19 +200,28 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
     }
   };
 
-  const handleDeleteOrder = async (orderId: string) => {
-    if (!confirm("Bu sifarişi silmək istədiyinizdən əminsiniz?")) return;
+  const handleDeleteOrder = (orderId: string) => {
+    setOrderToDelete(orderId);
+    setDeleteDialogOpen(true);
+  };
+
+  const confirmDeleteOrder = async () => {
+    if (!orderToDelete) return;
 
     try {
-      await fetch(`http://localhost:4000/api/orders/${orderId}`,
+      await fetch(`http://localhost:4000/api/orders/${orderToDelete}`,
         {
           method: "DELETE",
         }
       );
       fetchOrders();
+      toast.success("Sifariş silindi");
     } catch (error) {
       console.error("Sifariş silinərkən xəta:", error);
       toast.error("Xəta baş verdi");
+    } finally {
+      setDeleteDialogOpen(false);
+      setOrderToDelete(null);
     }
   };
 
@@ -539,6 +561,23 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
           </div>
         </div>
       )}
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Sifarişi silmək</AlertDialogTitle>
+            <AlertDialogDescription>
+              Bu sifarişi silmək istədiyinizdən əminsiniz? Bu əməliyyat geri qaytarıla bilməz.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Ləğv et</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDeleteOrder} className="bg-red-600 hover:bg-red-700">
+              Sil
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
