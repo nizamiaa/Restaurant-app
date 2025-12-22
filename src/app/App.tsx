@@ -49,6 +49,7 @@ export default function App() {
         <LandingPage 
           onViewMenu={handleViewMenu}
           onViewFeedback={handleViewFeedback}
+          onAdminAccess={() => setView("login")}
         />
       )}
       {view === "login" && <AdminLogin onLogin={handleAdminLogin} />}

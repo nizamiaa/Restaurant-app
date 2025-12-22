@@ -11,7 +11,7 @@
     "id": 2,
     "name": "Spaghetti Carbonara",
     "description": "Pancetta, egg, pecorino",
-    "price": 10.0,
+    "price": 10,
     "category": "Pasta",
     "image": "https://images.unsplash.com/photo-1551892376-2c0e7f4e0f6b?w=400"
   },
@@ -19,7 +19,7 @@
     "id": 3,
     "name": "Caesar Salad",
     "description": "Romaine, croutons, parmesan",
-    "price": 7.0,
+    "price": 7,
     "category": "Salad",
     "image": "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=400"
   },
@@ -35,7 +35,7 @@
     "id": 5,
     "name": "Lasagna",
     "description": "Layers of pasta, meat sauce, cheese",
-    "price": 12.0,
+    "price": 12,
     "category": "Pasta",
     "image": "https://images.unsplash.com/photo-1574894709920-11b28e7367e3?w=400"
   },
@@ -43,7 +43,7 @@
     "id": 6,
     "name": "Greek Salad",
     "description": "Tomatoes, cucumbers, feta, olives",
-    "price": 8.0,
+    "price": 8,
     "category": "Salad",
     "image": "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=400"
   },
@@ -51,7 +51,7 @@
     "id": 7,
     "name": "Cheeseburger",
     "description": "Beef patty, cheese, lettuce, tomato",
-    "price": 11.0,
+    "price": 11,
     "category": "Burgers",
     "image": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?w=400"
   },
@@ -59,7 +59,7 @@
     "id": 8,
     "name": "Chicken Wings",
     "description": "Spicy buffalo wings with ranch",
-    "price": 9.0,
+    "price": 9,
     "category": "Appetizers",
     "image": "https://images.unsplash.com/photo-1567620832903-9fc6debc209f?w=400"
   },
@@ -67,7 +67,7 @@
     "id": 9,
     "name": "Tiramisu",
     "description": "Coffee-flavored Italian dessert",
-    "price": 6.0,
+    "price": 6,
     "category": "Desserts",
     "image": "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400"
   },
@@ -75,7 +75,7 @@
     "id": 10,
     "name": "Cappuccino",
     "description": "Espresso with steamed milk foam",
-    "price": 4.0,
+    "price": 4,
     "category": "Drinks",
     "image": "https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400"
   },
@@ -83,7 +83,7 @@
     "id": 11,
     "name": "Vegetarian Pizza",
     "description": "Tomato, mozzarella, veggies",
-    "price": 9.0,
+    "price": 9,
     "category": "Pizza",
     "image": "https://images.unsplash.com/photo-1511689660979-10d2b1aada49?w=400"
   },
@@ -107,7 +107,7 @@
     "id": 14,
     "name": "BBQ Burger",
     "description": "Beef patty, BBQ sauce, bacon",
-    "price": 12.0,
+    "price": 12,
     "category": "Burgers",
     "image": "https://images.unsplash.com/photo-1551782450-17144efb5723?w=400"
   },
@@ -115,7 +115,7 @@
     "id": 15,
     "name": "Mozzarella Sticks",
     "description": "Fried cheese sticks with marinara",
-    "price": 7.0,
+    "price": 7,
     "category": "Appetizers",
     "image": "https://images.unsplash.com/photo-1541599468348-e96984315621?w=400"
   },
@@ -139,8 +139,16 @@
     "id": 18,
     "name": "Hawaiian Pizza",
     "description": "Tomato, mozzarella, ham, pineapple",
-    "price": 10.0,
+    "price": 10,
     "category": "Pizza",
     "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400"
+  },
+  {
+    "name": "Xaş",
+    "description": "",
+    "price": 10,
+    "category": "Əsas yeməklər",
+    "image": "https://evdar.az/wp-content/uploads/xa%C5%9F-yem%C9%99yi1.jpg",
+    "id": "1766404958766"
   }
 ]
