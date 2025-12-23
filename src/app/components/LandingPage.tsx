@@ -28,12 +28,6 @@ export function LandingPage({ onViewMenu, onViewFeedback, onAdminAccess }: Landi
               Menyuya bax
             </button>
             <button
-              onClick={onAdminAccess}
-              className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-lg font-bold text-lg hover:bg-white hover:text-red-600 transition transform hover:scale-105"
-            >
-              Admin girişi
-            </button>
-            <button
               onClick={onViewFeedback}
               className="bg-gray-100 text-red-600 px-8 py-4 rounded-lg font-bold text-lg hover:bg-gray-200 transition transform hover:scale-105 shadow-lg"
             >

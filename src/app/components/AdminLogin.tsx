@@ -62,12 +62,12 @@ export function AdminLogin({ onLogin }: AdminLoginProps) {
           >
             Daxil ol
           </button>
-
-          <p className="text-sm text-gray-500 text-center">
-            Demo şifrə: <code className="bg-gray-100 px-2 py-1 rounded">admin</code>
-          </p>
         </form>
       </div>
     </div>
   );
 }
+function setError(arg0: string) {
+  throw new Error("Function not implemented.");
+}
+

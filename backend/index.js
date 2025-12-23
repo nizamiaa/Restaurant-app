@@ -1,3 +1,5 @@
+// ...existing code...
+// (Move these route definitions after app is initialized below)
 const express = require('express');
 const cors = require('cors');
 const fs = require('fs');
@@ -6,6 +8,49 @@ const path = require('path');
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+// Edit menu item
+app.put('/api/menu/:id', (req, res) => {
+  const id = req.params.id;
+  const updatedItem = req.body;
+  fs.readFile(menuPath, 'utf8', (err, data) => {
+    if (err) return res.status(500).json({ error: 'Failed to read menu' });
+    let menu = [];
+    try {
+      menu = JSON.parse(data);
+    } catch (e) {
+      return res.status(500).json({ error: 'Invalid menu data' });
+    }
+    const idx = menu.findIndex(item => String(item.id) === String(id));
+    if (idx === -1) return res.status(404).json({ error: 'Menu item not found' });
+    menu[idx] = { ...menu[idx], ...updatedItem };
+    fs.writeFile(menuPath, JSON.stringify(menu, null, 2), err => {
+      if (err) return res.status(500).json({ error: 'Failed to update menu' });
+      res.json(menu[idx]);
+    });
+  });
+});
+
+// Delete menu item
+app.delete('/api/menu/:id', (req, res) => {
+  const id = req.params.id;
+  fs.readFile(menuPath, 'utf8', (err, data) => {
+    if (err) return res.status(500).json({ error: 'Failed to read menu' });
+    let menu = [];
+    try {
+      menu = JSON.parse(data);
+    } catch (e) {
+      return res.status(500).json({ error: 'Invalid menu data' });
+    }
+    const idx = menu.findIndex(item => String(item.id) === String(id));
+    if (idx === -1) return res.status(404).json({ error: 'Menu item not found' });
+    const deleted = menu.splice(idx, 1)[0];
+    fs.writeFile(menuPath, JSON.stringify(menu, null, 2), err => {
+      if (err) return res.status(500).json({ error: 'Failed to update menu' });
+      res.json(deleted);
+    });
+  });
+});
 
 const PORT = process.env.PORT || 4000;
 const dataDir = path.join(__dirname, 'data');

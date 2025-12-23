@@ -8,14 +8,6 @@
     "image": "https://images.unsplash.com/photo-1513104890138-7c749659a591?w=400"
   },
   {
-    "id": 2,
-    "name": "Spaghetti Carbonara",
-    "description": "Pancetta, egg, pecorino",
-    "price": 10,
-    "category": "Pasta",
-    "image": "https://images.unsplash.com/photo-1551892376-2c0e7f4e0f6b?w=400"
-  },
-  {
     "id": 3,
     "name": "Caesar Salad",
     "description": "Romaine, croutons, parmesan",
@@ -141,14 +133,6 @@
     "description": "Tomato, mozzarella, ham, pineapple",
     "price": 10,
     "category": "Pizza",
-    "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400"
-  },
-  {
-    "name": "Xaş",
-    "description": "",
-    "price": 10,
-    "category": "Əsas yeməklər",
-    "image": "https://evdar.az/wp-content/uploads/xa%C5%9F-yem%C9%99yi1.jpg",
-    "id": "1766404958766"
+    "image": "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400https://www.tasteofhome.com/recipes/hawaiian-pizza/"
   }
 ]
