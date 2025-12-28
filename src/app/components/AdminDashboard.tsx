@@ -1,25 +1,7 @@
 import { useState, useEffect } from "react";
-import {
-  Plus,
-  Pencil,
-  Trash2,
-  Package,
-  ShoppingBag,
-  LogOut,
-  MessageSquare,
-} from "lucide-react";
+import { Plus, Pencil, Trash2, Package, ShoppingBag, LogOut, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/app/components/ui/alert-dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog";
 
 interface MenuItem {
   id: string;
@@ -53,7 +35,7 @@ interface AdminDashboardProps {
   onLogout: () => void;
 }
 
-export function AdminDashboard({ onLogout }: AdminDashboardProps) {
+const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState<"menu" | "orders" | "feedback">("orders");
   const [menu, setMenu] = useState<MenuItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -654,3 +636,5 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
     </div>
   );
 }
+
+export default AdminDashboard;

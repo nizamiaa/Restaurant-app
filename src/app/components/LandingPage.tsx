@@ -1,12 +1,11 @@
 import { ChefHat, QrCode, ShoppingBag, Clock, Star, MapPin, Phone, Mail, Menu as MenuIcon } from "lucide-react";
-
 interface LandingPageProps {
   onViewMenu: () => void;
   onViewFeedback: () => void;
   onAdminAccess: () => void;
 }
 
-export function LandingPage({ onViewMenu, onViewFeedback, onAdminAccess }: LandingPageProps) {
+const LandingPage: React.FC<LandingPageProps> = ({ onViewMenu, onViewFeedback, onAdminAccess }) => {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
@@ -251,4 +250,6 @@ export function LandingPage({ onViewMenu, onViewFeedback, onAdminAccess }: Landi
       </footer>
     </div>
   );
-}
+};
+
+export default LandingPage;

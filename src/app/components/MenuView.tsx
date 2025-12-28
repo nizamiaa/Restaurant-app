@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { ShoppingCart, Plus, Minus, CircleCheckBig, ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
+import { LanguageSelector } from "./LanguageSelector";
 
 interface MenuItem {
   id: string;
@@ -19,7 +20,7 @@ interface MenuViewProps {
   onBack?: () => void;
 }
 
-export function MenuView({ onBack }: MenuViewProps) {
+const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
   const [menu, setMenu] = useState<MenuItem[]>([]);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -153,17 +154,22 @@ export function MenuView({ onBack }: MenuViewProps) {
               <p className="text-sm text-gray-600">Xoş gəlmisiniz</p>
             </div>
           </div>
-          <button
-            onClick={() => setShowCart(true)}
-            className="relative bg-red-600 text-white p-3 rounded-full hover:bg-red-700 transition"
-          >
-            <ShoppingCart className="size-6" />
-            {cart.length > 0 && (
-              <span className="absolute -top-2 -right-2 bg-yellow-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
-                {cart.reduce((sum, item) => sum + item.quantity, 0)}
-              </span>
-            )}
-          </button>
+          <div className="flex items-center gap-2 relative">
+            {/* Language Selector Button */}
+            <LanguageSelector />
+            {/* Shopping Cart Button */}
+            <button
+              onClick={() => setShowCart(true)}
+              className="relative bg-red-600 text-white p-3 rounded-full hover:bg-red-700 transition"
+            >
+              <ShoppingCart className="size-6" />
+              {cart.length > 0 && (
+                <span className="absolute -top-2 -right-2 bg-yellow-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
+                  {cart.reduce((sum, item) => sum + item.quantity, 0)}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -355,3 +361,5 @@ export function MenuView({ onBack }: MenuViewProps) {
     </div>
   );
 }
+
+export default MenuView;

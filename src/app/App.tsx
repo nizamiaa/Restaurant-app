@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { LandingPage } from "./components/LandingPage";
-import { MenuView } from "./components/MenuView";
-import { AdminDashboard } from "./components/AdminDashboard";
+import LandingPage from "./components/LandingPage";
+import MenuView from "./components/MenuView";
+import AdminDashboard from "./components/AdminDashboard";
 import { AdminLogin } from "./components/AdminLogin";
 import { Register } from "./components/Register";
 import { Feedback } from "./components/Feedback";
@@ -23,6 +23,7 @@ const App: React.FC = () => {
       }
     }
   }, []);
+  
 
   const handleAdminLogin = (userData?: any) => {
     setIsAdminAuthenticated(true);
@@ -54,17 +55,6 @@ const App: React.FC = () => {
 
   return (
     <div className="size-full">
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, padding: 8 }}>
-        <label>{t('language')}: </label>
-        <select
-          value={i18n.language}
-          onChange={e => i18n.changeLanguage(e.target.value)}
-        >
-          <option value="az">AZ</option>
-          <option value="en">EN</option>
-          <option value="ru">RU</option>
-        </select>
-      </div>
       {view === "landing" && (
         <LandingPage 
           onViewMenu={handleViewMenu}
