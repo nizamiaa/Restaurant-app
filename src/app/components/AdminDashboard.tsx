@@ -170,22 +170,42 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     }
   };
 
-  const handleDeleteMenuItem = async (id: string) => {
-    if (!confirm("Bu məhsulu silmək istədiyinizdən əminsiniz?")) return;
+        const handleDeleteMenuItem = async (id: string) => {
+        if (!confirm("Bu məhsulu silmək istədiyinizdən əminsiniz?")) return;
 
-    try {
-      const response = await fetch(`http://localhost:4000/api/menu/${id}`,
-        {
-          method: "DELETE",
+        try {
+          const response = await fetch(`http://localhost:4000/api/menu/${id}`,
+            {
+              method: "DELETE",
+            }
+          );
+
+          if (!response.ok) { // Check if the response status is not in the 2xx range
+            let errorMessage = "Xəta baş verdi";
+            try {
+              // Try to parse JSON error message if provided by the server
+              const errorData = await response.json();
+              errorMessage = errorData.message || errorMessage;
+            } catch (jsonError) {
+              // If server didn't send JSON, use status text or default message
+              errorMessage = response.statusText || errorMessage;
+            }
+            console.error(`Məhsul silinərkən xəta: ${response.status} - ${errorMessage}`);
+            toast.error(errorMessage);
+            return; // Stop execution after handling the error
+          }
+
+          // If the response is OK, parse the data
+          const data = await response.json();
+          setMenu(data); // Assuming 'data' contains the updated menu list after deletion
+          toast.success("Məhsul uğurla silindi!"); // Provide success feedback
+        } catch (error) {
+          // This catch block handles network errors or issues with response.json() if it's not handled above
+          console.error("Məhsul silinərkən şəbəkə xətası və ya cavabın oxunmasında problem:", error);
+          toast.error("Şəbəkə xətası baş verdi və ya cavab oxunmadı.");
         }
-      );
-      const data = await response.json();
-      setMenu(data);
-    } catch (error) {
-      console.error("Məhsul silinərkən xəta:", error);
-      toast.error("Xəta baş verdi");
-    }
-  };
+      };
+    
 
   const handleUpdateOrderStatus = async (orderId: string, status: string) => {
     try {
@@ -448,7 +468,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {menu.map((item) => (
+              {(Array.isArray(menu) ? menu : []).map((item) => (
                 <div
                   key={item.id}
                   className="bg-white rounded-lg shadow overflow-hidden"

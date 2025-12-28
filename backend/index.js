@@ -8,48 +8,23 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Edit menu item
-app.put('/api/menu/:id', (req, res) => {
-  const id = req.params.id;
-  const updatedItem = req.body;
-  fs.readFile(menuPath, 'utf8', (err, data) => {
-    if (err) return res.status(500).json({ error: 'Failed to read menu' });
-    let menu = [];
-    try {
-      menu = JSON.parse(data);
-    } catch (e) {
-      return res.status(500).json({ error: 'Invalid menu data' });
-    }
-    const idx = menu.findIndex(item => String(item.id) === String(id));
-    if (idx === -1) return res.status(404).json({ error: 'Menu item not found' });
-    menu[idx] = { ...menu[idx], ...updatedItem };
-    fs.writeFile(menuPath, JSON.stringify(menu, null, 2), err => {
-      if (err) return res.status(500).json({ error: 'Failed to update menu' });
-      res.json(menu[idx]);
-    });
-  });
-});
 
-// Delete menu item
-app.delete('/api/menu/:id', (req, res) => {
-  const id = req.params.id;
-  fs.readFile(menuPath, 'utf8', (err, data) => {
-    if (err) return res.status(500).json({ error: 'Failed to read menu' });
-    let menu = [];
-    try {
-      menu = JSON.parse(data);
-    } catch (e) {
-      return res.status(500).json({ error: 'Invalid menu data' });
-    }
-    const idx = menu.findIndex(item => String(item.id) === String(id));
-    if (idx === -1) return res.status(404).json({ error: 'Menu item not found' });
-    const deleted = menu.splice(idx, 1)[0];
-    fs.writeFile(menuPath, JSON.stringify(menu, null, 2), err => {
-      if (err) return res.status(500).json({ error: 'Failed to update menu' });
-      res.json(deleted);
-    });
-  });
+// Delete menu item (SQL-based, correct)
+app.delete('/api/menu/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const pool = await getPool();
+    const result = await pool.request()
+      .input('id', sql.Int, id)
+      .query('DELETE FROM dbo.Menu OUTPUT DELETED.* WHERE id=@id');
+    if (result.recordset.length === 0) return res.status(404).json({ error: 'Menu item not found' });
+    res.json(result.recordset[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete menu item', details: err.message });
+  }
 });
+    
+    
 
 const PORT = process.env.PORT || 4000;
 
@@ -83,19 +58,43 @@ app.post('/api/menu', async (req, res) => {
 
 
 app.put('/api/menu/:id', async (req, res) => {
-  const { name, price, description } = req.body;
   try {
+    const { id } = req.params;
+    const { name, price, description } = req.body;
+
     const pool = await getPool();
-    const result = await pool.request()
-      .input('id', sql.Int, req.params.id)
+
+    // UPDATE
+    const updateResult = await pool.request()
+      .input('id', sql.Int, parseInt(id))
       .input('name', sql.NVarChar, name)
-      .input('price', sql.Decimal(10,2), price)
+      .input('price', sql.Decimal(10, 2), parseFloat(price))
       .input('description', sql.NVarChar, description)
-      .query('UPDATE Menu SET name=@name, price=@price, description=@description WHERE id=@id; SELECT * FROM Menu WHERE id=@id');
-    if (result.recordset.length === 0) return res.status(404).json({ error: 'not found' });
-    res.json(result.recordset[0]);
+      .query(`
+        UPDATE dbo.Menu
+        SET name = @name,
+            price = @price,
+            description = @description
+        WHERE id = @id
+      `);
+
+    if (updateResult.rowsAffected[0] === 0) {
+      return res.status(404).json({ error: 'Menu item not found' });
+    }
+
+    // SELECT updated row
+    const selectResult = await pool.request()
+      .input('id', sql.Int, parseInt(id))
+      .query('SELECT * FROM dbo.Menu WHERE id = @id');
+
+    res.json(selectResult.recordset[0]);
+
   } catch (err) {
-    res.status(500).json({ error: 'Failed to update menu item', details: err.message });
+    console.error('UPDATE ERROR:', err);
+    res.status(500).json({
+      error: 'Failed to update menu item',
+      details: err.message
+    });
   }
 });
 
@@ -103,13 +102,21 @@ app.put('/api/menu/:id', async (req, res) => {
 app.delete('/api/menu/:id', async (req, res) => {
   try {
     const pool = await getPool();
-    await pool.request().input('id', sql.Int, req.params.id).query('DELETE FROM Menu WHERE id=@id');
+
+    await pool.request()
+      .input('id', sql.Int, parseInt(req.params.id))
+      .query('DELETE FROM dbo.Menu WHERE id = @id');
+
     res.json({ success: true });
+
   } catch (err) {
-    res.status(500).json({ error: 'Failed to delete menu item', details: err.message });
+    console.error('DELETE ERROR:', err);
+    res.status(500).json({
+      error: 'Failed to delete menu item',
+      details: err.message
+    });
   }
 });
-
 
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
