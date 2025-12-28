@@ -2,8 +2,7 @@
 // (Move these route definitions after app is initialized below)
 const express = require('express');
 const cors = require('cors');
-const fs = require('fs');
-const path = require('path');
+const { sql, getPool } = require('./db');
 
 const app = express();
 app.use(cors());
@@ -53,131 +52,195 @@ app.delete('/api/menu/:id', (req, res) => {
 });
 
 const PORT = process.env.PORT || 4000;
-const dataDir = path.join(__dirname, 'data');
-const menuPath = path.join(dataDir, 'menu.json');
-const ordersPath = path.join(dataDir, 'orders.json');
-const feedbackPath = path.join(dataDir, 'feedback.json');
 
-let orders = [];
-let feedback = [];
 
-const readMenu = () => {
+
+app.get('/api/menu', async (req, res) => {
   try {
-    return JSON.parse(fs.readFileSync(menuPath, 'utf8'));
-  } catch {
-    return [];
+    const pool = await getPool();
+    const result = await pool.request().query('SELECT * FROM Menu');
+    res.json(result.recordset);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch menu', details: err.message });
   }
-};
+});
 
-const writeMenu = (menu) => {
-  fs.writeFileSync(menuPath, JSON.stringify(menu, null, 2));
-};
 
-const loadOrders = () => {
+app.post('/api/menu', async (req, res) => {
+  const { name, price, description } = req.body;
   try {
-    return JSON.parse(fs.readFileSync(ordersPath, 'utf8'));
-  } catch {
-    return [];
+    const pool = await getPool();
+    const result = await pool.request()
+      .input('name', sql.NVarChar, name)
+      .input('price', sql.Decimal(10,2), price)
+      .input('description', sql.NVarChar, description)
+      .query('INSERT INTO Menu (name, price, description) OUTPUT INSERTED.* VALUES (@name, @price, @description)');
+    res.json(result.recordset[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to add menu item', details: err.message });
   }
-};
+});
 
-const saveOrders = (orders) => {
-  fs.writeFileSync(ordersPath, JSON.stringify(orders, null, 2));
-};
 
-const readFeedback = () => {
+app.put('/api/menu/:id', async (req, res) => {
+  const { name, price, description } = req.body;
   try {
-    return JSON.parse(fs.readFileSync(feedbackPath, 'utf8'));
-  } catch {
-    return [];
+    const pool = await getPool();
+    const result = await pool.request()
+      .input('id', sql.Int, req.params.id)
+      .input('name', sql.NVarChar, name)
+      .input('price', sql.Decimal(10,2), price)
+      .input('description', sql.NVarChar, description)
+      .query('UPDATE Menu SET name=@name, price=@price, description=@description WHERE id=@id; SELECT * FROM Menu WHERE id=@id');
+    if (result.recordset.length === 0) return res.status(404).json({ error: 'not found' });
+    res.json(result.recordset[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update menu item', details: err.message });
   }
-};
-
-const saveFeedback = (feedback) => {
-  fs.writeFileSync(feedbackPath, JSON.stringify(feedback, null, 2));
-};
-
-// Load orders and feedback on startup
-orders = loadOrders();
-feedback = readFeedback();
-
-app.get('/api/menu', (req, res) => {
-  res.json(readMenu());
 });
 
-app.post('/api/menu', (req, res) => {
-  const menu = readMenu();
-  const newItem = { ...req.body, id: Date.now().toString() };
-  menu.push(newItem);
-  writeMenu(menu);
-  res.json(menu);
+
+app.delete('/api/menu/:id', async (req, res) => {
+  try {
+    const pool = await getPool();
+    await pool.request().input('id', sql.Int, req.params.id).query('DELETE FROM Menu WHERE id=@id');
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete menu item', details: err.message });
+  }
 });
 
-app.put('/api/menu/:id', (req, res) => {
-  const menu = readMenu();
-  const index = menu.findIndex(item => item.id === req.params.id);
-  if (index === -1) return res.status(404).json({ error: 'not found' });
-  menu[index] = { ...menu[index], ...req.body };
-  writeMenu(menu);
-  res.json(menu);
+
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
+
+// Register
+app.post('/api/auth/register', async (req, res) => {
+  const { username, password, language } = req.body;
+  if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
+  try {
+    const pool = await getPool();
+    const hashed = await bcrypt.hash(password, 10);
+    const result = await pool.request()
+      .input('username', sql.NVarChar, username)
+      .input('password', sql.NVarChar, hashed)
+      .input('language', sql.NVarChar, language || 'en')
+      .query('INSERT INTO Users (username, password, language) OUTPUT INSERTED.id, INSERTED.username, INSERTED.language VALUES (@username, @password, @language)');
+    const user = result.recordset[0];
+    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET);
+    res.json({ token, user });
+  } catch (err) {
+    if (err.message.includes('UNIQUE')) return res.status(409).json({ error: 'Username already exists' });
+    res.status(500).json({ error: 'Registration failed', details: err.message });
+  }
 });
 
-app.delete('/api/menu/:id', (req, res) => {
-  const menu = readMenu();
-  const filtered = menu.filter(item => item.id !== req.params.id);
-  writeMenu(filtered);
-  res.json(filtered);
-});
-
-app.post('/api/auth/login', (req, res) => {
+// Login
+app.post('/api/auth/login', async (req, res) => {
   const { username, password } = req.body || {};
-  if (username === 'admin' && password === 'admin') {
-    return res.json({ token: 'admintoken123', role: 'admin' });
+  if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
+  try {
+    const pool = await getPool();
+    const result = await pool.request()
+      .input('username', sql.NVarChar, username)
+      .query('SELECT * FROM Users WHERE username=@username');
+    const user = result.recordset[0];
+    if (!user) return res.status(401).json({ error: 'Invalid credentials' });
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.status(401).json({ error: 'Invalid credentials' });
+    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET);
+    res.json({ token, user: { id: user.id, username: user.username, language: user.language } });
+  } catch (err) {
+    res.status(500).json({ error: 'Login failed', details: err.message });
   }
-  if (username === 'user' && password === 'user') {
-    return res.json({ token: 'usertoken123', role: 'user' });
-  }
-  res.status(401).json({ error: 'Invalid credentials' });
 });
 
-app.get('/api/orders', (req, res) => {
-  res.json(orders);
-});
-
-app.post('/api/orders', (req, res) => {
-  const order = req.body || {};
-  order.id = Date.now();
-  order.status = 'received';
-  order.createdAt = new Date().toISOString();
-  orders.push(order);
-  saveOrders(orders);
-  res.status(201).json(order);
-});
-
-app.put('/api/orders/:id', (req, res) => {
-  const order = orders.find(o => o.id == req.params.id);
-  if (!order) return res.status(404).json({ error: 'not found' });
-  order.status = req.body.status;
-  saveOrders(orders);
-  res.json(order);
-});
-
-app.delete('/api/orders/:id', (req, res) => {
-  orders = orders.filter(o => o.id != req.params.id);
-  saveOrders(orders);
+// Sign out (client can just delete token, but endpoint for completeness)
+app.post('/api/auth/logout', (req, res) => {
   res.json({ success: true });
 });
 
-app.get('/api/feedback', (req, res) => {
-  res.json(feedback);
+
+app.get('/api/orders', async (req, res) => {
+  try {
+    const pool = await getPool();
+    const result = await pool.request().query('SELECT * FROM Orders');
+    res.json(result.recordset);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch orders', details: err.message });
+  }
 });
 
-app.post('/api/feedback', (req, res) => {
-  const newFeedback = req.body || {};
-  newFeedback.id = Date.now().toString();
-  feedback.push(newFeedback);
-  saveFeedback(feedback);
-  res.status(201).json(newFeedback);
+
+app.post('/api/orders', async (req, res) => {
+  const { items, customer, total } = req.body;
+  try {
+    const pool = await getPool();
+    const result = await pool.request()
+      .input('items', sql.NVarChar, JSON.stringify(items))
+      .input('customer', sql.NVarChar, customer)
+      .input('total', sql.Decimal(10,2), total)
+      .input('status', sql.NVarChar, 'received')
+      .input('createdAt', sql.DateTime, new Date())
+      .query('INSERT INTO Orders (items, customer, total, status, createdAt) OUTPUT INSERTED.* VALUES (@items, @customer, @total, @status, @createdAt)');
+    res.status(201).json(result.recordset[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to create order', details: err.message });
+  }
+});
+
+
+app.put('/api/orders/:id', async (req, res) => {
+  const { status } = req.body;
+  try {
+    const pool = await getPool();
+    const result = await pool.request()
+      .input('id', sql.Int, req.params.id)
+      .input('status', sql.NVarChar, status)
+      .query('UPDATE Orders SET status=@status WHERE id=@id; SELECT * FROM Orders WHERE id=@id');
+    if (result.recordset.length === 0) return res.status(404).json({ error: 'not found' });
+    res.json(result.recordset[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update order', details: err.message });
+  }
+});
+
+
+app.delete('/api/orders/:id', async (req, res) => {
+  try {
+    const pool = await getPool();
+    await pool.request().input('id', sql.Int, req.params.id).query('DELETE FROM Orders WHERE id=@id');
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to delete order', details: err.message });
+  }
+});
+
+
+app.get('/api/feedback', async (req, res) => {
+  try {
+    const pool = await getPool();
+    const result = await pool.request().query('SELECT * FROM Feedback');
+    res.json(result.recordset);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to fetch feedback', details: err.message });
+  }
+});
+
+
+app.post('/api/feedback', async (req, res) => {
+  const { message, user } = req.body;
+  try {
+    const pool = await getPool();
+    const result = await pool.request()
+      .input('message', sql.NVarChar, message)
+      .input('user', sql.NVarChar, user)
+      .query('INSERT INTO Feedback (message, user) OUTPUT INSERTED.* VALUES (@message, @user)');
+    res.status(201).json(result.recordset[0]);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to add feedback', details: err.message });
+  }
 });
 
 app.get('/', (req, res) => {
