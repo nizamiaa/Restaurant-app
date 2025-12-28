@@ -121,10 +121,9 @@ app.post('/api/auth/register', async (req, res) => {
   if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
   try {
     const pool = await getPool();
-    const hashed = await bcrypt.hash(password, 10);
     const result = await pool.request()
       .input('username', sql.NVarChar, username)
-      .input('password', sql.NVarChar, hashed)
+      .input('password', sql.NVarChar, password)
       .input('language', sql.NVarChar, language || 'en')
       .query('INSERT INTO Users (username, password, language) OUTPUT INSERTED.id, INSERTED.username, INSERTED.language VALUES (@username, @password, @language)');
     const user = result.recordset[0];
@@ -147,10 +146,9 @@ app.post('/api/auth/login', async (req, res) => {
       .query('SELECT * FROM Users WHERE username=@username');
     const user = result.recordset[0];
     if (!user) return res.status(401).json({ error: 'Invalid credentials' });
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) return res.status(401).json({ error: 'Invalid credentials' });
+    if (user.password !== password) return res.status(401).json({ error: 'Invalid credentials' });
     const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET);
-    res.json({ token, user: { id: user.id, username: user.username, language: user.language } });
+    res.json({ token, user: { id: user.id, username: user.username, language: user.language, role: user.role } });
   } catch (err) {
     res.status(500).json({ error: 'Login failed', details: err.message });
   }
