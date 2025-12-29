@@ -79,14 +79,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     const orders = data.map((o: any) => ({
       ...o,
       customerName: o.customerName,
+      tableNumber: o.tableNumber,
       totalPrice: o.totalPrice,
-    }));
+      status: o.status,
+      createdAt: o.createdAt,
+      items: typeof o.items === "string" ? JSON.parse(o.items) : o.items, // 🔥
+    })).reverse(); // Reverse so newest is first
 
     setOrders(orders);
   } catch (error) {
     console.error("Sifarişlər yüklənərkən xəta:", error);
   }
 };
+
 
 
   const fetchFeedback = async () => {
@@ -402,16 +407,16 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                     </div>
 
                     <div className="border-t pt-4 mb-4">
-                      {order.items.map((item, idx) => (
+                      {order.items.map((items, idx) => (
                         <div
                           key={idx}
                           className="flex justify-between py-2 border-b last:border-0"
                         >
                           <span>
-                            {item.quantity}x {item.name}
+                            {items.quantity}x {items.name}
                           </span>
                           <span className="font-semibold">
-                            ₼{(item.price * item.quantity).toFixed(2)}
+                            ₼{(items.price * items.quantity).toFixed(2)}
                           </span>
                         </div>
                       ))}
@@ -476,37 +481,37 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {(Array.isArray(menu) ? menu : []).map((item) => (
+              {(Array.isArray(menu) ? menu : []).map((items) => (
                 <div
-                  key={item.id}
+                  key={items.id}
                   className="bg-white rounded-lg shadow overflow-hidden"
                 >
                   <img
-                    src={item.imageUrl}
-                    alt={item.name}
+                    src={items.imageUrl}
+                    alt={items.name}
                     className="w-full h-48 object-cover"
                   />
                   <div className="p-4">
-                    <h3 className="font-bold text-lg mb-1">{item.name}</h3>
+                    <h3 className="font-bold text-lg mb-1">{items.name}</h3>
                     <p className="text-sm text-gray-600 mb-2">
-                      {item.description}
+                      {items.description}
                     </p>
                     <p className="text-sm text-gray-500 mb-2">
-                      {item.category}
+                      {items.category}
                     </p>
                     <div className="flex justify-between items-center">
                       <span className="text-red-600 font-bold text-xl">
-                        ₼{item.price.toFixed(2)}
+                        ₼{items.price.toFixed(2)}
                       </span>
                       <div className="flex gap-2">
                         <button
-                          onClick={() => openEditModal(item)}
+                          onClick={() => openEditModal(items)}
                           className="p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition"
                         >
                           <Pencil className="size-4" />
                         </button>
                         <button
-                          onClick={() => handleDeleteMenuItem(item.id)}
+                          onClick={() => handleDeleteMenuItem(items.id)}
                           className="p-2 bg-red-100 text-red-600 rounded hover:bg-red-200 transition"
                         >
                           <Trash2 className="size-4" />
@@ -531,28 +536,28 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
               </div>
             ) : (
               <div className="grid gap-6">
-                {feedback.map((item) => (
-                  <div key={item.id} className="bg-white rounded-lg shadow p-6">
+                {feedback.map((items) => (
+                  <div key={items.id} className="bg-white rounded-lg shadow p-6">
                     <div className="flex justify-between items-start mb-4">
                       <div>
-                        <h3 className="font-bold text-lg">{item.name}</h3>
-                        {item.email && (
-                          <p className="text-sm text-gray-600">{item.email}</p>
+                        <h3 className="font-bold text-lg">{items.name}</h3>
+                        {items.email && (
+                          <p className="text-sm text-gray-600">{items.email}</p>
                         )}
                         <p className="text-sm text-gray-500 mt-1">
-                          {new Date(item.createdAt).toLocaleString('az-AZ')}
+                          {new Date(items.createdAt).toLocaleString('az-AZ')}
                         </p>
                       </div>
                       <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        item.type === 'comment' ? 'bg-blue-100 text-blue-800' :
-                        item.type === 'suggestion' ? 'bg-green-100 text-green-800' :
+                        items.type === 'comment' ? 'bg-blue-100 text-blue-800' :
+                        items.type === 'suggestion' ? 'bg-green-100 text-green-800' :
                         'bg-red-100 text-red-800'
                       }`}>
-                        {item.type === 'comment' ? 'Rəy' :
-                         item.type === 'suggestion' ? 'Təklif' : 'Şikayət'}
+                        {items.type === 'comment' ? 'Rəy' :
+                         items.type === 'suggestion' ? 'Təklif' : 'Şikayət'}
                       </span>
                     </div>
-                    <p className="text-gray-700">{item.message}</p>
+                    <p className="text-gray-700">{items.message}</p>
                   </div>
                 ))}
               </div>
