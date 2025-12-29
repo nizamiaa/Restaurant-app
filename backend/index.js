@@ -42,39 +42,54 @@ app.get('/api/menu', async (req, res) => {
 
 
 app.post('/api/menu', async (req, res) => {
-  const { name, price, description } = req.body;
+  const { name, price, description, imageUrl, category } = req.body;
+
   try {
     const pool = await getPool();
     const result = await pool.request()
       .input('name', sql.NVarChar, name)
       .input('price', sql.Decimal(10,2), price)
       .input('description', sql.NVarChar, description)
-      .query('INSERT INTO Menu (name, price, description) OUTPUT INSERTED.* VALUES (@name, @price, @description)');
+      .input('category', sql.NVarChar, category)
+      .input('imageUrl', sql.NVarChar, imageUrl)
+      .query(`
+        INSERT INTO Menu (name, price, description, category, imageUrl)
+        OUTPUT INSERTED.*
+        VALUES (@name, @price, @description,@category, @imageUrl)
+      `);
+
     res.json(result.recordset[0]);
   } catch (err) {
-    res.status(500).json({ error: 'Failed to add menu item', details: err.message });
+    res.status(500).json({
+      error: 'Failed to add menu item',
+      details: err.message
+    });
   }
 });
+
 
 
 app.put('/api/menu/:id', async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, price, description } = req.body;
+    const { name, price, description, imageUrl, category } = req.body;
 
     const pool = await getPool();
 
-    // UPDATE
     const updateResult = await pool.request()
       .input('id', sql.Int, parseInt(id))
       .input('name', sql.NVarChar, name)
       .input('price', sql.Decimal(10, 2), parseFloat(price))
       .input('description', sql.NVarChar, description)
+      .input('category', sql.NVarChar, category)
+      .input('imageUrl', sql.NVarChar, imageUrl)
       .query(`
-        UPDATE dbo.Menu
+        UPDATE Menu
         SET name = @name,
             price = @price,
-            description = @description
+            description = @description,
+            category = @category,
+            imageUrl = @imageUrl
         WHERE id = @id
       `);
 
@@ -82,15 +97,13 @@ app.put('/api/menu/:id', async (req, res) => {
       return res.status(404).json({ error: 'Menu item not found' });
     }
 
-    // SELECT updated row
     const selectResult = await pool.request()
       .input('id', sql.Int, parseInt(id))
-      .query('SELECT * FROM dbo.Menu WHERE id = @id');
+      .query('SELECT * FROM Menu WHERE id = @id');
 
     res.json(selectResult.recordset[0]);
 
   } catch (err) {
-    console.error('UPDATE ERROR:', err);
     res.status(500).json({
       error: 'Failed to update menu item',
       details: err.message
@@ -179,21 +192,40 @@ app.get('/api/orders', async (req, res) => {
 
 
 app.post('/api/orders', async (req, res) => {
-  const { items, customer, total } = req.body;
+  const { items, customerName, tableNumber, totalPrice } = req.body;
+
+  if (!items || !customerName || !tableNumber || !totalPrice) {
+    return res.status(400).json({ error: 'All fields are required' });
+  }
+
+  const total = parseFloat(totalPrice);
+  if (isNaN(total)) {
+    return res.status(400).json({ error: 'Total price invalid' });
+  }
+
   try {
     const pool = await getPool();
     const result = await pool.request()
       .input('items', sql.NVarChar, JSON.stringify(items))
-      .input('customer', sql.NVarChar, customer)
-      .input('total', sql.Decimal(10,2), total)
+      .input('customerName', sql.NVarChar, customerName)
+      .input('tableNumber', sql.NVarChar, tableNumber)
+      .input('totalPrice', sql.Decimal(10,2), total)
       .input('status', sql.NVarChar, 'received')
       .input('createdAt', sql.DateTime, new Date())
-      .query('INSERT INTO Orders (items, customer, total, status, createdAt) OUTPUT INSERTED.* VALUES (@items, @customer, @total, @status, @createdAt)');
+      .query(`
+        INSERT INTO Orders (items, customerName, tableNumber, totalPrice, status, createdAt)
+        OUTPUT INSERTED.*
+        VALUES (@items, @customerName, @tableNumber, @totalPrice, @status, @createdAt)
+      `);
+
     res.status(201).json(result.recordset[0]);
   } catch (err) {
+    console.error('Order creation error:', err);
     res.status(500).json({ error: 'Failed to create order', details: err.message });
   }
 });
+
+
 
 
 app.put('/api/orders/:id', async (req, res) => {

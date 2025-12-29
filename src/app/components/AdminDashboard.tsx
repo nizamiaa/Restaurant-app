@@ -9,7 +9,7 @@ interface MenuItem {
   description: string;
   price: number;
   category: string;
-  image: string;
+  imageUrl: string;
 }
 
 interface Order {
@@ -48,7 +48,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     description: "",
     price: "",
     category: "",
-    image: "",
+    imageUrl: "",
   });
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState<string | null>(null);
@@ -72,19 +72,22 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   };
 
   const fetchOrders = async () => {
-    try {
-      const response = await fetch('http://localhost:4000/api/orders');
-      const data = await response.json();
-      const now = new Date();
-      const oneDayAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-      const freshOrders = data.filter((order: Order) => new Date(order.createdAt) >= oneDayAgo);
-      const oldOrders = data.filter((order: Order) => new Date(order.createdAt) < oneDayAgo);
-      setOrders(freshOrders);
-      oldOrders.forEach((order: Order) => deleteOldOrder(order.id));
-    } catch (error) {
-      console.error("Sifarişlər yüklənərkən xəta:", error);
-    }
-  };
+  try {
+    const response = await fetch('http://localhost:4000/api/orders');
+    const data = await response.json();
+
+    const orders = data.map((o: any) => ({
+      ...o,
+      customerName: o.customerName,
+      totalPrice: o.totalPrice,
+    }));
+
+    setOrders(orders);
+  } catch (error) {
+    console.error("Sifarişlər yüklənərkən xəta:", error);
+  }
+};
+
 
   const fetchFeedback = async () => {
     try {
@@ -97,78 +100,83 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   };
 
   const handleAddMenuItem = async () => {
-    if (!formData.name || !formData.price || !formData.category) {
-      toast.error("Zəhmət olmasa bütün məlumatları doldurun");
-      return;
-    }
+  if (!formData.name || !formData.price || !formData.category) {
+    toast.error("Zəhmət olmasa bütün məlumatları doldurun");
+    return;
+  }
 
-    setLoading(true);
-    try {
-      const response = await fetch('http://localhost:4000/api/menu',
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...formData,
-            price: parseFloat(formData.price),
-          }),
-        }
-      );
-      const data = await response.json();
-      setMenu(data);
-      setShowMenuModal(false);
-      setFormData({
-        name: "",
-        description: "",
-        price: "",
-        category: "",
-        image: "",
-      });
-    } catch (error) {
-      console.error("Məhsul əlavə edilərkən xəta:", error);
-      toast.error("Xəta baş verdi");
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    const response = await fetch("http://localhost:4000/api/menu", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: formData.name,
+        description: formData.description,
+        category: formData.category,
+        imageUrl: formData.imageUrl,
+        price: parseFloat(formData.price),
+      }),
+    });
+
+    const createdItem = await response.json();
+
+    // 🔥 BURASI ƏSAS FIX
+    setMenu((prev) => [...prev, createdItem]);
+
+    setShowMenuModal(false);
+    setFormData({
+      name: "",
+      description: "",
+      price: "",
+      category: "",
+      imageUrl: "",
+    });
+  } catch (err) {
+    toast.error("Xəta baş verdi");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   const handleUpdateMenuItem = async () => {
-    if (!editingItem) return;
+  if (!editingItem) return;
 
-    setLoading(true);
-    try {
-      const response = await fetch(`http://localhost:4000/api/menu/${editingItem.id}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...formData,
-            price: parseFloat(formData.price),
-          }),
-        }
-      );
-      const data = await response.json();
-      setMenu(data);
-      setShowMenuModal(false);
-      setEditingItem(null);
-      setFormData({
-        name: "",
-        description: "",
-        price: "",
-        category: "",
-        image: "",
-      });
-    } catch (error) {
-      console.error("Məhsul yenilənərkən xəta:", error);
-      toast.error("Xəta baş verdi");
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    const response = await fetch(
+      `http://localhost:4000/api/menu/${editingItem.id}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.name,
+          description: formData.description,
+          category: formData.category,
+          imageUrl: formData.imageUrl,
+          price: parseFloat(formData.price),
+        }),
+      }
+    );
+
+    const updatedItem = await response.json();
+
+    setMenu((prev) =>
+      prev.map((item) =>
+        item.id === updatedItem.id ? updatedItem : item
+      )
+    );
+
+    setShowMenuModal(false);
+    setEditingItem(null);
+  } catch {
+    toast.error("Xəta baş verdi");
+  } finally {
+    setLoading(false);
+  }
+};
+
 
         const handleDeleteMenuItem = async (id: string) => {
         if (!confirm("Bu məhsulu silmək istədiyinizdən əminsiniz?")) return;
@@ -268,7 +276,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       description: "",
       price: "",
       category: "",
-      image: "",
+      imageUrl: "",
     });
     setShowMenuModal(true);
   };
@@ -280,7 +288,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       description: item.description,
       price: item.price.toString(),
       category: item.category,
-      image: item.image,
+      imageUrl: item.imageUrl,
     });
     setShowMenuModal(true);
   };
@@ -474,7 +482,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                   className="bg-white rounded-lg shadow overflow-hidden"
                 >
                   <img
-                    src={item.image}
+                    src={item.imageUrl}
                     alt={item.name}
                     className="w-full h-48 object-cover"
                   />
@@ -607,9 +615,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
               <input
                 type="text"
                 placeholder="Şəkil URL"
-                value={formData.image}
+                value={formData.imageUrl}
                 onChange={(e) =>
-                  setFormData({ ...formData, image: e.target.value })
+                  setFormData({ ...formData, imageUrl: e.target.value })
                 }
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-600"
               />

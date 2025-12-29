@@ -9,7 +9,7 @@ interface MenuItem {
   description: string;
   price: number;
   category: string;
-  image: string;
+  imageUrl: string;
 }
 
 interface CartItem extends MenuItem {
@@ -223,7 +223,7 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
               className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition"
             >
               <img
-                src={item.image}
+                src={item.imageUrl}
                 alt={item.name}
                 className="w-full h-48 object-cover"
               />
@@ -288,7 +288,7 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
                             className="flex items-center gap-4 border-b pb-4"
                           >
                             <img
-                              src={item.image}
+                              src={item.imageUrl}
                               alt={item.name}
                               className="w-20 h-20 object-cover rounded"
                             />
