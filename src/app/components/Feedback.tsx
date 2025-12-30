@@ -13,6 +13,7 @@ export function Feedback({ onBack }: FeedbackProps) {
     email: "",
     type: "comment" as "comment" | "suggestion" | "complaint",
     message: "",
+    rating: 0,
   });
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
@@ -21,7 +22,11 @@ export function Feedback({ onBack }: FeedbackProps) {
     e.preventDefault();
 
     if (!formData.name || !formData.message) {
-      toast.error("{t('feedback.fillRequiredFields')}");
+      toast.error(t('feedback.fillRequiredFields'));
+      return;
+    }
+    if (formData.rating < 1) {
+      toast.error(t('feedback.ratingRequired') || 'Please give at least 1 star.');
       return;
     }
 
@@ -45,13 +50,14 @@ export function Feedback({ onBack }: FeedbackProps) {
           email: "",
           type: "comment",
           message: "",
+          rating: 0,
         });
       } else {
-        toast.error("{t('feedback.submissionFailed')}");
+        toast.error(t('feedback.submissionFailed'));
       }
     } catch (error) {
-      console.error("{t('feedback.errorOccurred')}", error);
-      toast.error("{t('feedback.errorOccurred')}");
+      console.error(t('feedback.errorOccurred'), error);
+      toast.error(t('feedback.errorOccurred'));
     } finally {
       setLoading(false);
     }
@@ -87,6 +93,32 @@ export function Feedback({ onBack }: FeedbackProps) {
               {t('feedback.valuableFeedback')}
             </p>
           </div>
+
+          <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                {t('feedback.rating') || 'Rating'}
+              </label>
+              <div className="flex gap-2 items-center">
+                {[1,2,3,4,5].map((star) => (
+                  <button
+                    type="button"
+                    key={star}
+                    onClick={() => setFormData({ ...formData, rating: star })}
+                    className={
+                      star <= formData.rating
+                        ? "text-yellow-400"
+                        : "text-gray-300"
+                    }
+                    aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" className="w-7 h-7">
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.966a1 1 0 00.95.69h4.175c.969 0 1.371 1.24.588 1.81l-3.38 2.455a1 1 0 00-.364 1.118l1.287 3.966c.3.921-.755 1.688-1.54 1.118l-3.38-2.455a1 1 0 00-1.175 0l-3.38 2.455c-.784.57-1.838-.197-1.539-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.049 9.393c-.783-.57-.38-1.81.588-1.81h4.175a1 1 0 00.95-.69l1.286-3.966z" />
+                    </svg>
+                  </button>
+                ))}
+                <span className="ml-2 text-sm text-gray-600">{formData.rating > 0 ? formData.rating : ''}</span>
+              </div>
+            </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

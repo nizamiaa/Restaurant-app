@@ -267,7 +267,7 @@ app.get('/api/feedback', async (req, res) => {
 
 
 app.post('/api/feedback', async (req, res) => {
-  const { name, email, type, message, createdAt } = req.body;
+  const { name, email, type, message, createdAt, rating } = req.body;
   try {
     const pool = await getPool();
     const result = await pool.request()
@@ -276,7 +276,8 @@ app.post('/api/feedback', async (req, res) => {
       .input('type', sql.NVarChar, type)
       .input('message', sql.NVarChar, message)
       .input('createdAt', sql.DateTime, createdAt)
-      .query('INSERT INTO Feedback (name, email, type, message, createdAt) OUTPUT INSERTED.* VALUES (@name, @email, @type, @message, @createdAt)');
+      .input('rating', sql.Int, rating)
+      .query('INSERT INTO Feedback (name, email, type, message, createdAt, rating) OUTPUT INSERTED.* VALUES (@name, @email, @type, @message, @createdAt, @rating)');
     res.status(201).json(result.recordset[0]);
   } catch (err) {
     res.status(500).json({ error: 'Failed to add feedback', details: err.message });

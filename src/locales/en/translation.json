@@ -66,12 +66,15 @@
       "emailOptional": "Email (optional)",
       "feedbackType": "Feedback Type",
       "yourMessagePlaceholder": "Write your feedback in detail...",
+      "valuableFeedback": "Your feedback and suggestions are very valuable to us.",
       "comment": "Comment",
       "suggestion": "Suggestion",
       "complaint": "Complaint",
       "sending": "Sending...",
       "send": "Send",
       "privacy": "Privacy",
+      "rating": "Rating",
+      "ratingRequired": "Please fill in the rating field",
       "privacyMessage": "The information you provide will only be used to improve our service."
   },
   "admin": {

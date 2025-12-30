@@ -31,6 +31,7 @@ interface Feedback {
   type: "comment" | "suggestion" | "complaint";
   message: string;
   createdAt: string;
+  rating: number;
 }
 
 interface AdminDashboardProps {
@@ -562,6 +563,22 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                         <p className="text-sm text-gray-500 mt-1">
                           {new Date(items.createdAt).toLocaleString('az-AZ')}
                         </p>
+                        {typeof items.rating === 'number' && items.rating > 0 && (
+                          <div className="flex items-center gap-1 mt-1">
+                            {[1,2,3,4,5].map((star) => (
+                              <svg
+                                key={star}
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill={star <= items.rating ? "#facc15" : "#e5e7eb"}
+                                viewBox="0 0 20 20"
+                                className="w-5 h-5"
+                              >
+                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.286 3.966a1 1 0 00.95.69h4.175c.969 0 1.371 1.24.588 1.81l-3.38 2.455a1 1 0 00-.364 1.118l1.287 3.966c.3.921-.755 1.688-1.54 1.118l-3.38-2.455a1 1 0 00-1.175 0l-3.38 2.455c-.784.57-1.838-.197-1.539-1.118l1.287-3.966a1 1 0 00-.364-1.118L2.049 9.393c-.783-.57-.38-1.81.588-1.81h4.175a1 1 0 00.95-.69l1.286-3.966z" />
+                              </svg>
+                            ))}
+                            <span className="ml-2 text-xs text-gray-600">{items.rating}/5</span>
+                          </div>
+                        )}
                       </div>
                       <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                         items.type === 'comment' ? 'bg-blue-100 text-blue-800' :
