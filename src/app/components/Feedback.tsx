@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ArrowLeft, Send, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
+import { useTranslation } from "react-i18next";
 
 interface FeedbackProps {
   onBack: () => void;
@@ -14,12 +15,13 @@ export function Feedback({ onBack }: FeedbackProps) {
     message: "",
   });
   const [loading, setLoading] = useState(false);
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!formData.name || !formData.message) {
-      toast.error("Zəhmət olmasa adınızı və mesajınızı daxil edin");
+      toast.error("{t('feedback.fillRequiredFields')}");
       return;
     }
 
@@ -37,7 +39,7 @@ export function Feedback({ onBack }: FeedbackProps) {
       });
 
       if (response.ok) {
-        toast.success("Rəyiniz üçün təşəkkür edirik!");
+        toast.success(t('feedback.thankYou'));
         setFormData({
           name: "",
           email: "",
@@ -45,11 +47,11 @@ export function Feedback({ onBack }: FeedbackProps) {
           message: "",
         });
       } else {
-        toast.error("Xəta baş verdi, yenidən cəhd edin");
+        toast.error("{t('feedback.submissionFailed')}");
       }
     } catch (error) {
-      console.error("Feedback göndərilərkən xəta:", error);
-      toast.error("Xəta baş verdi, yenidən cəhd edin");
+      console.error("{t('feedback.errorOccurred')}", error);
+      toast.error("{t('feedback.errorOccurred')}");
     } finally {
       setLoading(false);
     }
@@ -68,7 +70,7 @@ export function Feedback({ onBack }: FeedbackProps) {
             >
               <ArrowLeft className="size-6 text-gray-700" />
             </button>
-            <h1 className="text-2xl font-bold text-gray-900">Rəy və Təkliflər</h1>
+            <h1 className="text-2xl font-bold text-gray-900">{t('feedback.title')}</h1>
           </div>
         </div>
       </header>
@@ -79,10 +81,10 @@ export function Feedback({ onBack }: FeedbackProps) {
           <div className="text-center mb-8">
             <MessageSquare className="size-16 text-red-600 mx-auto mb-4" />
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Fikrinizi Bizimlə Paylaşın
+              {t('feedback.shareYourThoughts')}
             </h2>
             <p className="text-gray-600">
-              Rəyləriniz və təklifləriniz bizim üçün çox qiymətlidir. Restoranımızı yaxşılaşdırmağa kömək edin!
+              {t('feedback.valuableFeedback')}
             </p>
           </div>
 
@@ -90,20 +92,20 @@ export function Feedback({ onBack }: FeedbackProps) {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Adınız *
+                  {t('feedback.yourName')} *
                 </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                   className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-600"
-                  placeholder="Adınızı daxil edin"
+                  placeholder={t('feedback.yourName')}
                   required
                 />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  E-poçt (İxtiyari)
+                  {t('feedback.emailOptional')}
                 </label>
                 <input
                   type="email"
@@ -117,29 +119,29 @@ export function Feedback({ onBack }: FeedbackProps) {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Rəy növü
+                {t('feedback.feedbackType')}
               </label>
               <select
                 value={formData.type}
                 onChange={(e) => setFormData({ ...formData, type: e.target.value as "comment" | "suggestion" | "complaint" })}
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-600"
               >
-                <option value="comment">Rəy</option>
-                <option value="suggestion">Təklif</option>
-                <option value="complaint">Şikayət</option>
+                <option value="comment">{t('feedback.comment')}</option>
+                <option value="suggestion">{t('feedback.suggestion')}</option>
+                <option value="complaint">{t('feedback.complaint')}</option>
               </select>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Mesajınız *
+                {t('feedback.yourMessage')} *
               </label>
               <textarea
                 value={formData.message}
                 onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-600"
                 rows={6}
-                placeholder="Fikrinizi detallı şəkildə yazın..."
+                placeholder={t('feedback.yourMessagePlaceholder')}
                 required
               />
             </div>
@@ -152,21 +154,21 @@ export function Feedback({ onBack }: FeedbackProps) {
               {loading ? (
                 <>
                   <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
-                  Göndərilir...
+                  {t('feedback.sending')}
                 </>
               ) : (
                 <>
                   <Send className="size-5" />
-                  Göndər
+                  {t('feedback.send')}
                 </>
               )}
             </button>
           </form>
 
           <div className="mt-8 p-4 bg-gray-50 rounded-lg">
-            <h3 className="font-semibold text-gray-900 mb-2">Məxfilik</h3>
+            <h3 className="font-semibold text-gray-900 mb-2">{t('feedback.privacy')}</h3>
             <p className="text-sm text-gray-600">
-              Göndərdiyiniz məlumatlar yalnız xidmətimizi yaxşılaşdırmaq üçün istifadə olunacaq.
+              {t('feedback.privacyMessage')}
             </p>
           </div>
         </div>
