@@ -73,7 +73,8 @@
       "sending": "Sending...",
       "send": "Send",
       "privacy": "Privacy",
-      "rating": "Rating",
+      "rating": "Rating *",
+      "averageRating": "Average Rating",
       "ratingRequired": "Please fill in the rating field",
       "privacyMessage": "The information you provide will only be used to improve our service."
   },

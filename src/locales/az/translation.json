@@ -78,7 +78,8 @@
     "suggestion": "Təklif",
     "complaint": "Şikayət",
     "privacy": "Məxfilik",
-    "rating": "Reytinq",
+    "rating": "Reytinq *",
+    "averageRating": "Orta Reytinq",
     "ratingRequired": "Zəhmət olmasa reytinq xanasını doldurun",
     "privacyMessage": "Göndərdiyiniz məlumatlar yalnız xidmətimizi yaxşılaşdırmaq üçün istifadə olunacaq."
   },
