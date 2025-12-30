@@ -6,11 +6,14 @@
     "searchBtn": "Axtar",
     "category": "Kateqoriya:",
     "addToCart": "Əlavə et",
-    "all": "Hamısı"
+    "all": "Hamısı",
+    "errorLoad": "Menyu yüklənərkən xəta baş verdi"
   },
+
   "languageSelector": {
     "selectLanguage": "Dil seçin"
   },
+
   "order": {
     "fillAll": "Zəhmət olmasa bütün məlumatları doldurun",
     "error": "Sifariş göndərilərkən xəta baş verdi",
@@ -20,6 +23,7 @@
     "table": "Masa nömrəsi",
     "submit": "Sifariş et"
   },
+
   "landingpage": {
     "kitchen": "Ənənəvi Azərbaycan mətbəxi indi onlayn sifariş ilə",
     "allMenu": "Menyuya bax",
@@ -28,7 +32,7 @@
     "qrCodeMenu": "QR Kod Menyusu",
     "scanToViewMenu": "Masanızdan QR kod skan edərək menyumuza dərhal baxın və sifariş verin",
     "easyOrder": "Asan Sifariş",
-    "orderFromTable": "Masanızdan birneçə kliklə asanlıqla sifariş edin",
+    "orderFromTable": "Masanızdan bir neçə kliklə asanlıqla sifariş edin",
     "fastService": "Sürətli Xidmət",
     "trackOrder": "Sifarişinizin statusunu real vaxtda izləyin və tez xidmət alın",
     "popularDishes": "Məşhur Yeməklərimiz",
@@ -54,27 +58,66 @@
     "footerDescription": "Ənənəvi dadlar, müasir xidmət",
     "allRightsReserved": "Bütün hüquqlar qorunur."
   },
+
   "feedback": {
-      "fillRequiredFields": "Zəhmət olmasa adınızı və mesajınızı daxil edin",
-      "thankYou": "Rəyiniz üçün təşəkkür edirik!",
-      "submissionFailed": "Rəy göndərilərkən xəta baş verdi",
-      "errorOccurred": "Xəta baş verdi",
-      "title": "Rəy və Təkliflər",
-      "shareYourThoughts": "Fikirlərinizi bizimlə bölüşün",
-      "valuableFeedback": "Rəyləriniz və təklifləriniz bizim üçün çox qiymətlidir. Restoranımızı yaxşılaşdırmağa kömək edin!",
-      "yourName": "Adınız",
-      "yourMessage": "Mesajınız",
-      "emailOptional": "Email (istəyə bağlı)",
-      "yourMessagePlaceholder": "Fikrinizi detallı şəkildə yazın...",
-      "feedbackType": "Rəy növü",
-      "sending": "Göndərilir...",
-      "send": "Göndər",
-      "comment": "Rəy",
-      "suggestion": "Təklif",
-      "complaint": "Şikayət",
-      "privacy": "Məxfilik",
-      "privacyMessage": "Göndərdiyiniz məlumatlar yalnız xidmətimizi yaxşılaşdırmaq üçün istifadə olunacaq."
+    "fillRequiredFields": "Zəhmət olmasa adınızı və mesajınızı daxil edin",
+    "thankYou": "Rəyiniz üçün təşəkkür edirik!",
+    "submissionFailed": "Rəy göndərilərkən xəta baş verdi",
+    "errorOccurred": "Xəta baş verdi",
+    "title": "Rəy və Təkliflər",
+    "shareYourThoughts": "Fikirlərinizi bizimlə bölüşün",
+    "valuableFeedback": "Rəyləriniz və təklifləriniz bizim üçün çox qiymətlidir.",
+    "yourName": "Adınız",
+    "yourMessage": "Mesajınız",
+    "emailOptional": "Email (istəyə bağlı)",
+    "yourMessagePlaceholder": "Fikrinizi detallı şəkildə yazın...",
+    "feedbackType": "Rəy növü",
+    "sending": "Göndərilir...",
+    "send": "Göndər",
+    "comment": "Rəy",
+    "suggestion": "Təklif",
+    "complaint": "Şikayət",
+    "privacy": "Məxfilik",
+    "privacyMessage": "Göndərdiyiniz məlumatlar yalnız xidmətimizi yaxşılaşdırmaq üçün istifadə olunacaq."
   },
+
+  "admin": {
+    "errorLoadingOrders": "Sifarişlər yüklənərkən xəta baş verdi",
+    "errorLoadingFeedback": "Rəylər yüklənərkən xəta baş verdi",
+    "fillRequiredFields": "Zəhmət olmasa bütün məlumatları doldurun",
+    "confirmDeleteMenuItem": "Bu menyu maddəsini silmək istədiyinizə əminsiniz?",
+    "productDeletedSuccessfully": "Məhsul uğurla silindi!",
+    "errorOccurred": "Şəbəkə xətası baş verdi və ya cavab oxunmadı.",
+    "orderDeletedSuccessfully": "Sifariş uğurla silindi!",
+    "preparing": "hazırlanır",
+    "ready": "hazırdır",
+    "delivered": "təhvil verilib",
+    "adminPanel": "Admin Paneli",
+    "managementPanel": "İdarəetmə paneli",
+    "logout": "Çıxış",
+    "orders": "Sifarişlər",
+    "menuManagement": "Menyu İdarəsi",
+    "feedback": "Rəylər",
+    "activeOrders": "Aktiv Sifarişlər",
+    "noOrdersYet": "Hələ sifariş yoxdur",
+    "total": "Cəmi",
+    "addMenuItem": "Yeni Məhsul",
+    "feedbackCustomer": "Müştəri Rəyləri",
+    "noFeedbackYet": "Hələ rəy yoxdur",
+    "editMenuItem": "Məhsulu Redaktə Et",
+    "addNewMenuItem": "Yeni Məhsul Əlavə Et",
+    "name": "Ad",
+    "description": "Təsvir",
+    "price": "Qiymət",
+    "mainDishes": "Əsas yeməklər",
+    "desserts": "Desertlər",
+    "drinks": "İçkilər",
+    "salads": "Salatlar",
+    "appetizers": "Başlanğıclar",
+    "confirmDeleteOrder": "Sifarişi silmək",
+    "confirmDeleteOrderDescription": "Bu sifarişi silmək istədiyinizdən əminsiniz? Bu əməliyyat geri qaytarıla bilməz."
+  },
+
   "cart": {
     "title": "Səbət",
     "empty": "Səbət boşdur",
@@ -82,7 +125,5 @@
   },
   "common": {
     "back": "Geri"
-  },
-  "restaurant": "Restoran",
-  "menu.errorLoad": "Menyu yüklənərkən xəta baş verdi"
+  }
 }

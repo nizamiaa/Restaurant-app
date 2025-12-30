@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { Plus, Pencil, Trash2, Package, ShoppingBag, LogOut, MessageSquare } from "lucide-react";
 import { toast } from "sonner";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "./ui/alert-dialog";
+import { useTranslation } from "react-i18next";
+import { LanguageSelector } from "./LanguageSelector";
 
 interface MenuItem {
   id: string;
@@ -52,12 +54,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   });
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchMenu();
     fetchOrders();
     fetchFeedback();
-    const interval = setInterval(fetchOrders, 10000); // Refresh orders every 10 seconds
+    const interval = setInterval(fetchOrders, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -83,12 +86,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       totalPrice: o.totalPrice,
       status: o.status,
       createdAt: o.createdAt,
-      items: typeof o.items === "string" ? JSON.parse(o.items) : o.items, // 🔥
-    })).reverse(); // Reverse so newest is first
+      items: typeof o.items === "string" ? JSON.parse(o.items) : o.items,
+    })).reverse();
 
     setOrders(orders);
   } catch (error) {
-    console.error("Sifarişlər yüklənərkən xəta:", error);
+    console.error(t("admin.errorLoadingOrders"), error);
   }
 };
 
@@ -106,14 +109,14 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
     setFeedback(sortedFeedback);
   } catch (error) {
-    console.error("Rəylər yüklənərkən xəta:", error);
+    console.error(t("admin.errorLoadingFeedback"), error);
   }
 };
 
 
   const handleAddMenuItem = async () => {
   if (!formData.name || !formData.price || !formData.category) {
-    toast.error("Zəhmət olmasa bütün məlumatları doldurun");
+    toast.error(t("admin.fillRequiredFields"));
     return;
   }
 
@@ -133,7 +136,6 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
     const createdItem = await response.json();
 
-    // 🔥 BURASI ƏSAS FIX
     setMenu((prev) => [...prev, createdItem]);
 
     setShowMenuModal(false);
@@ -191,7 +193,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
 
         const handleDeleteMenuItem = async (id: string) => {
-        if (!confirm("Bu məhsulu silmək istədiyinizdən əminsiniz?")) return;
+        if (!confirm(t("admin.confirmDeleteMenuItem"))) return;
 
         try {
           const response = await fetch(`http://localhost:4000/api/menu/${id}`,
@@ -200,29 +202,25 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             }
           );
 
-          if (!response.ok) { // Check if the response status is not in the 2xx range
+          if (!response.ok) {
             let errorMessage = "Xəta baş verdi";
             try {
-              // Try to parse JSON error message if provided by the server
               const errorData = await response.json();
               errorMessage = errorData.message || errorMessage;
             } catch (jsonError) {
-              // If server didn't send JSON, use status text or default message
               errorMessage = response.statusText || errorMessage;
             }
             console.error(`Məhsul silinərkən xəta: ${response.status} - ${errorMessage}`);
             toast.error(errorMessage);
-            return; // Stop execution after handling the error
+            return;
           }
 
-          // If the response is OK, parse the data
           const data = await response.json();
-          setMenu(data); // Assuming 'data' contains the updated menu list after deletion
-          toast.success("Məhsul uğurla silindi!"); // Provide success feedback
+          setMenu(data);
+          toast.success(t("admin.productDeletedSuccessfully"));
         } catch (error) {
-          // This catch block handles network errors or issues with response.json() if it's not handled above
           console.error("Məhsul silinərkən şəbəkə xətası və ya cavabın oxunmasında problem:", error);
-          toast.error("Şəbəkə xətası baş verdi və ya cavab oxunmadı.");
+          toast.error(t("admin.errorOccurred"));
         }
       };
     
@@ -240,7 +238,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       );
       fetchOrders();
     } catch (error) {
-      console.error("Status yenilənərkən xəta:", error);
+      console.error(t("admin.errorOccurred"), error);
     }
   };
 
@@ -259,10 +257,10 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         }
       );
       fetchOrders();
-      toast.success("Sifariş silindi");
+      toast.success(t("admin.orderDeletedSuccessfully"));
     } catch (error) {
-      console.error("Sifariş silinərkən xəta:", error);
-      toast.error("Xəta baş verdi");
+      console.error(t("admin.errorOccurred"), error);
+      toast.error(t("admin.errorOccurred"));
     } finally {
       setDeleteDialogOpen(false);
       setOrderToDelete(null);
@@ -277,7 +275,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         }
       );
     } catch (error) {
-      console.error("Köhnə sifariş silinərkən xəta:", error);
+      console.error(t("admin.errorOccurred"), error);
     }
   };
 
@@ -309,11 +307,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
     switch (status) {
       case "yeni":
         return "bg-blue-100 text-blue-800";
-      case "hazırlanır":
+      case "{t('admin.preparing')}":
         return "bg-yellow-100 text-yellow-800";
-      case "hazırdır":
+      case "{t('admin.ready')}":
         return "bg-green-100 text-green-800";
-      case "təhvil verilib":
+      case "{t('admin.delivered')}":
         return "bg-gray-100 text-gray-800";
       default:
         return "bg-gray-100 text-gray-800";
@@ -327,16 +325,17 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold text-red-600">
-              Admin Paneli
+              {t("admin.adminPanel")}
             </h1>
-            <p className="text-sm text-gray-600">İdarəetmə paneli</p>
+            <p className="text-sm text-gray-600">{t("admin.managementPanel")}</p>
           </div>
+          <LanguageSelector />
           <button
             onClick={onLogout}
             className="flex items-center gap-2 bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 transition"
           >
             <LogOut className="size-4" />
-            Çıxış
+            {t("admin.logout")}
           </button>
         </div>
       </header>
@@ -353,7 +352,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             }`}
           >
             <ShoppingBag className="size-5" />
-            Sifarişlər
+            {t("admin.orders")}
           </button>
           <button
             onClick={() => setActiveTab("menu")}
@@ -364,7 +363,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             }`}
           >
             <Package className="size-5" />
-            Menyu İdarəsi
+            {t("admin.menuManagement")}
           </button>
           <button
             onClick={() => setActiveTab("feedback")}
@@ -375,18 +374,18 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             }`}
           >
             <MessageSquare className="size-5" />
-            Rəylər
+            {t("admin.feedback")}
           </button>
         </div>
 
         {/* Orders Tab */}
         {activeTab === "orders" && (
           <div>
-            <h2 className="text-2xl font-bold mb-6">Aktiv Sifarişlər</h2>
+            <h2 className="text-2xl font-bold mb-6">{t("admin.activeOrders")}</h2>
             {orders.length === 0 ? (
               <div className="bg-white rounded-lg p-12 text-center">
                 <ShoppingBag className="size-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">Hələ sifariş yoxdur</p>
+                <p className="text-gray-500">{t("admin.noOrdersYet")}</p>
               </div>
             ) : (
               <div className="grid gap-6">
@@ -398,7 +397,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                           {order.customerName}
                         </h3>
                         <p className="text-gray-600">
-                          Masa: {order.tableNumber}
+                          {t("order.table")}: {order.tableNumber}
                         </p>
                         <p className="text-sm text-gray-500">
                           {new Date(order.createdAt).toLocaleString("az-AZ")}
@@ -431,32 +430,32 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
                     <div className="flex justify-between items-center">
                       <div className="text-xl font-bold text-red-600">
-                        Cəmi: ₼{order.totalPrice.toFixed(2)}
+                        {t("admin.total")}: ₼{order.totalPrice.toFixed(2)}
                       </div>
                       <div className="flex gap-2">
                         <button
                           onClick={() =>
-                            handleUpdateOrderStatus(order.id, "hazırlanır")
+                            handleUpdateOrderStatus(order.id, t("admin.preparing"))
                           }
                           className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition"
                         >
-                          Hazırlanır
+                          {t("admin.preparing")}
                         </button>
                         <button
                           onClick={() =>
-                            handleUpdateOrderStatus(order.id, "hazırdır")
+                            handleUpdateOrderStatus(order.id, t("admin.ready"))
                           }
                           className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
                         >
-                          Hazırdır
+                          {t("admin.ready")}
                         </button>
                         <button
                           onClick={() =>
-                            handleUpdateOrderStatus(order.id, "təhvil verilib")
+                            handleUpdateOrderStatus(order.id, t("admin.delivered"))
                           }
                           className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition"
                         >
-                          Təhvil verilib
+                          {t("admin.delivered")}
                         </button>
                         <button
                           onClick={() => handleDeleteOrder(order.id)}
@@ -477,13 +476,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         {activeTab === "menu" && (
           <div>
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">Menyu İdarəsi</h2>
+              <h2 className="text-2xl font-bold">{t("admin.menuManagement")}</h2>
               <button
                 onClick={openAddModal}
                 className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
               >
                 <Plus className="size-5" />
-                Yeni Məhsul
+                {t("admin.addMenuItem")}
               </button>
             </div>
 
@@ -535,11 +534,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         {/* Feedback Tab */}
         {activeTab === "feedback" && (
           <div>
-            <h2 className="text-2xl font-bold mb-6">Müştəri Rəyləri</h2>
+            <h2 className="text-2xl font-bold mb-6">{t("admin.feedbackCustomer")}</h2>
             {feedback.length === 0 ? (
               <div className="bg-white rounded-lg p-12 text-center">
                 <MessageSquare className="size-16 text-gray-300 mx-auto mb-4" />
-                <p className="text-gray-500">Hələ rəy yoxdur</p>
+                <p className="text-gray-500">{t("admin.noFeedbackYet")}</p>
               </div>
             ) : (
               <div className="grid gap-6">
@@ -560,8 +559,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                         items.type === 'suggestion' ? 'bg-green-100 text-green-800' :
                         'bg-red-100 text-red-800'
                       }`}>
-                        {items.type === 'comment' ? 'Rəy' :
-                         items.type === 'suggestion' ? 'Təklif' : 'Şikayət'}
+                        {items.type === 'comment' ? t("feedback.comment") :
+                         items.type === 'suggestion' ? t("feedback.suggestion") : t("feedback.complaint")}
                       </span>
                     </div>
                     <p className="text-gray-700">{items.message}</p>
@@ -578,13 +577,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-md w-full p-6">
             <h2 className="text-2xl font-bold mb-6">
-              {editingItem ? "Məhsulu Redaktə Et" : "Yeni Məhsul Əlavə Et"}
+              {editingItem ? t("admin.editMenuItem") : t("admin.addNewMenuItem")}
             </h2>
 
             <div className="space-y-4">
               <input
                 type="text"
-                placeholder="Ad"
+                placeholder={t("admin.name")}
                 value={formData.name}
                 onChange={(e) =>
                   setFormData({ ...formData, name: e.target.value })
@@ -592,7 +591,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-600"
               />
               <textarea
-                placeholder="Təsvir"
+                placeholder={t("admin.description")}
                 value={formData.description}
                 onChange={(e) =>
                   setFormData({ ...formData, description: e.target.value })
@@ -603,7 +602,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
               <input
                 type="number"
                 step="0.01"
-                placeholder="Qiymət (₼)"
+                placeholder={t("admin.price") + " (₼)"}
                 value={formData.price}
                 onChange={(e) =>
                   setFormData({ ...formData, price: e.target.value })
@@ -617,12 +616,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                 }
                 className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-600"
               >
-                <option value="">Kateqoriya seçin</option>
-                <option value="Əsas yeməklər">Əsas yeməklər</option>
-                <option value="Desertlər">Desertlər</option>
-                <option value="İçkilər">İçkilər</option>
-                <option value="Salatlar">Salatlar</option>
-                <option value="Başlanğıclar">Başlanğıclar</option>
+                <option value="">{t("admin.category")}</option>
+                <option value="Əsas yeməklər">{t("admin.mainDishes")}</option>
+                <option value="Desertlər">{t("admin.desserts")}</option>
+                <option value="İçkilər">{t("admin.drinks")}</option>
+                <option value="Salatlar">{t("admin.salads")}</option>
+                <option value="Başlanğıclar">{t("admin.appetizers")}</option>
               </select>
               <input
                 type="text"
@@ -640,7 +639,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                   className="flex-1 bg-gray-200 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-300 transition"
                   disabled={loading}
                 >
-                  Ləğv et
+                  {t("common.back")}
                 </button>
                 <button
                   onClick={
@@ -660,15 +659,15 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Sifarişi silmək</AlertDialogTitle>
+            <AlertDialogTitle>{t("admin.confirmDeleteOrder")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Bu sifarişi silmək istədiyinizdən əminsiniz? Bu əməliyyat geri qaytarıla bilməz.
+              {t("admin.confirmDeleteOrderDescription")}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Ləğv et</AlertDialogCancel>
+            <AlertDialogCancel>{t("common.back")}</AlertDialogCancel>
             <AlertDialogAction onClick={confirmDeleteOrder} className="bg-red-600 hover:bg-red-700">
-              Sil
+              {t("admin.confirmDeleteOrder")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
