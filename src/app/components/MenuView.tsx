@@ -34,6 +34,13 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchInput, setSearchInput] = useState("");
   const { t } = useTranslation();
+  const categoryMap: Record<string, string> = {
+    "Əsas yeməklər": t("admin.mainDishes"),
+    "Desertlər": t("admin.desserts"),
+    "İçkilər": t("admin.drinks"),
+    "Salatlar": t("admin.salads"),
+    "Başlanğıclar": t("admin.appetizers"),
+  };
 
   useEffect(() => {
     fetchMenu();
@@ -213,7 +220,7 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
                      ${selectedCategory === cat
                         ? 'bg-red-600 text-white border-red-600 shadow-lg scale-105'
                         : 'bg-white text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400'}`}>
-                      {cat === "all" ? t("menu.all") : cat}
+                      {cat === "all" ? t("menu.all") : (categoryMap[cat] || cat)}
                   </button>
                 ))}
               </div>
@@ -239,6 +246,9 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
                 <h3 className="font-bold text-lg mb-2">{item.name}</h3>
                 <p className="text-gray-600 text-sm mb-4">
                   {item.description}
+                </p>
+                <p className="text-gray-500 text-sm mb-2">
+                  {categoryMap[item.category] || item.category}
                 </p>
                 <div className="flex justify-between items-center">
                   <span className="text-red-600 font-bold text-xl">

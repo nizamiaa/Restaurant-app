@@ -55,6 +55,13 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [orderToDelete, setOrderToDelete] = useState<string | null>(null);
   const { t } = useTranslation();
+  const categoryMap: Record<string, string> = {
+    "Əsas yeməklər": t("admin.mainDishes"),
+    "Desertlər": t("admin.desserts"),
+    "İçkilər": t("admin.drinks"),
+    "Salatlar": t("admin.salads"),
+    "Başlanğıclar": t("admin.appetizers"),
+  };
 
   useEffect(() => {
     fetchMenu();
@@ -329,7 +336,9 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             </h1>
             <p className="text-sm text-gray-600">{t("admin.managementPanel")}</p>
           </div>
-          <LanguageSelector />
+          <div className="ml-auto">
+            <LanguageSelector />
+          </div>
           <button
             onClick={onLogout}
             className="flex items-center gap-2 bg-gray-200 px-4 py-2 rounded-lg hover:bg-gray-300 transition"
@@ -503,7 +512,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                       {items.description}
                     </p>
                     <p className="text-sm text-gray-500 mb-2">
-                      {items.category}
+                      {categoryMap[items.category] || items.category}
                     </p>
                     <div className="flex justify-between items-center">
                       <span className="text-red-600 font-bold text-xl">
