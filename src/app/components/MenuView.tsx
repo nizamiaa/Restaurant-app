@@ -206,19 +206,16 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
               <span className="text-gray-700 font-medium mb-1">{t("menu.category")}</span>
               <div className="flex flex-wrap gap-2 justify-center">
                 {allCategories.map((cat) => (
-  <button
-    key={cat}
-    onClick={() => setSelectedCategory(cat)}
-    className={`px-4 py-2 rounded-full font-semibold border transition
-      ${selectedCategory === cat
-        ? 'bg-red-600 text-white border-red-600 shadow-lg scale-105'
-        : 'bg-white text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400'}
-    `}
-  >
-    {cat === "all" ? t("menu.all") : cat}
-  </button>
-))}
-
+                  <button
+                    key={cat}
+                    onClick={() => setSelectedCategory(cat)}
+                    className={`px-4 py-2 rounded-full font-semibold border transition
+                     ${selectedCategory === cat
+                        ? 'bg-red-600 text-white border-red-600 shadow-lg scale-105'
+                        : 'bg-white text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400'}`}>
+                      {cat === "all" ? t("menu.all") : cat}
+                  </button>
+                ))}
               </div>
             </div>
           </div>

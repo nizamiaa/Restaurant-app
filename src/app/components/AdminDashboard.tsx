@@ -95,14 +95,21 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
 
   const fetchFeedback = async () => {
-    try {
-      const response = await fetch('http://localhost:4000/api/feedback');
-      const data = await response.json();
-      setFeedback(data);
-    } catch (error) {
-      console.error("Rəylər yüklənərkən xəta:", error);
-    }
-  };
+  try {
+    const response = await fetch('http://localhost:4000/api/feedback');
+    const data = await response.json();
+
+    const sortedFeedback = data.sort(
+      (a: Feedback, b: Feedback) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+
+    setFeedback(sortedFeedback);
+  } catch (error) {
+    console.error("Rəylər yüklənərkən xəta:", error);
+  }
+};
+
 
   const handleAddMenuItem = async () => {
   if (!formData.name || !formData.price || !formData.category) {

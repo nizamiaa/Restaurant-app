@@ -71,11 +71,7 @@ const App: React.FC = () => {
         </>
       )}
       {view === "register" && <Register onRegister={handleRegister} />}
-      {isAdminAuthenticated && (
-        <div style={{ position: 'absolute', top: 8, right: 8 }}>
-          <button onClick={handleAdminLogout} className="bg-gray-200 px-3 py-1 rounded">{t('logout')}</button>
-        </div>
-      )}
+      {isAdminAuthenticated}
       {view === "admin" && isAdminAuthenticated && (
         <AdminDashboard onLogout={handleAdminLogout} />
       )}
