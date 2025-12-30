@@ -1,7 +1,32 @@
 {
-  "welcome": "Welcome",
-  "login": "Login",
-  "logout": "Sign out",
-  "register": "Register",
-  "language": "Language"
+  "menu": {
+    "title": "Restaurant Menu",
+    "welcome": "Welcome",
+    "searchPlaceholder": "Search...",
+    "searchBtn": "Search",
+    "category": "Category:",
+    "addToCart": "Add to Cart",
+    "all": "All"
+  },
+  "languageSelector": {
+    "selectLanguage": "Select Language"
+  },
+  "order": {
+    "fillAll": "Please fill in all fields",
+    "error": "Error occurred while placing the order",
+    "success": "Your order has been placed!",
+    "preparing": "Preparing shortly...",
+    "name": "Your Name",
+    "table": "Table Number",
+    "submit": "Place Order"
+  },
+  "cart": {
+    "title": "Cart",
+    "empty": "Cart is empty",
+    "total": "Total"
+  },
+  "common": {
+    "back": "Back"
+  },
+  "menu.errorLoad": "Error loading menu"
 }

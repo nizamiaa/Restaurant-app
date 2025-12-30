@@ -1,7 +1,32 @@
 {
-  "welcome": "Xoş gəlmisiniz",
-  "login": "Daxil ol",
-  "logout": "Çıxış",
-  "register": "Qeydiyyat",
-  "language": "Dil"
+  "menu": {
+    "title": "Restoran Menyusu",
+    "welcome": "Xoş gəlmisiniz",
+    "searchPlaceholder": "Yemək axtar...",
+    "searchBtn": "Axtar",
+    "category": "Kateqoriya:",
+    "addToCart": "Əlavə et",
+    "all": "Hamısı"
+  },
+  "languageSelector": {
+    "selectLanguage": "Dil seçin"
+  },
+  "order": {
+    "fillAll": "Zəhmət olmasa bütün məlumatları doldurun",
+    "error": "Sifariş göndərilərkən xəta baş verdi",
+    "success": "Sifarişiniz qəbul edildi!",
+    "preparing": "Tezliklə hazırlanacaq",
+    "name": "Adınız",
+    "table": "Masa nömrəsi",
+    "submit": "Sifariş et"
+  },
+  "cart": {
+    "title": "Səbət",
+    "empty": "Səbət boşdur",
+    "total": "Cəmi"
+  },
+  "common": {
+    "back": "Geri"
+  },
+  "menu.errorLoad": "Menyu yüklənərkən xəta baş verdi"
 }

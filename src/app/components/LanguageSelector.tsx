@@ -10,9 +10,13 @@ const LANGUAGES = [
 export const LanguageSelector: React.FC = () => {
   const { i18n } = useTranslation();
   const [open, setOpen] = useState(false);
+  const [currentLang, setCurrentLang] = useState(
+    localStorage.getItem("lang") || "en"
+  );
   const ref = useRef<HTMLDivElement>(null);
+  const { t } = useTranslation();
 
-  // Close dropdown on outside click
+  // 🔹 outside click → close
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -23,37 +27,75 @@ export const LanguageSelector: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const current = LANGUAGES.find(l => l.code === i18n.language) || LANGUAGES[0];
+  // 🔹 update state when i18n.language changes
+  useEffect(() => {
+    const handleLanguageChange = (lng: string) => setCurrentLang(lng);
+    i18n.on("languageChanged", handleLanguageChange);
+    return () => i18n.off("languageChanged", handleLanguageChange);
+  }, [i18n]);
+
+  const current = LANGUAGES.find((l) => l.code === currentLang) || LANGUAGES[0];
+
+  const changeLanguage = (code: string) => {
+    i18n.changeLanguage(code);
+    localStorage.setItem("lang", code);
+    setOpen(false);
+  };
 
   return (
     <div ref={ref} className="relative select-none">
       <button
-        className="relative text-white p-3 rounded-full"
-        onClick={() => setOpen(o => !o)}
+        onClick={() => setOpen((o) => !o)}
+        className="relative p-3 rounded-full"
         aria-haspopup="dialog"
         aria-expanded={open}
       >
-        <img src={current.flag} alt={current.label} className="w-12 h-12 rounded-full border" />
+        <img
+          src={current.flag}
+          alt={current.label}
+          className="w-12 h-12 rounded-full border"
+        />
       </button>
+
       {open && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-[#222] rounded-xl shadow-lg p-6 min-w-[260px] w-full max-w-xs relative">
+        <div
+          className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center"
+          onClick={() => setOpen(false)}
+        >
+          <div
+            className="bg-[#222] rounded-xl p-6 w-full max-w-xs relative"
+            onClick={(e) => e.stopPropagation()}
+          >
             <button
-              className="absolute top-3 right-3 text-gray-400 hover:text-white text-xl"
               onClick={() => setOpen(false)}
+              className="absolute top-3 right-3 text-gray-400 hover:text-white text-xl"
               aria-label="Bağla"
             >
               ×
             </button>
-            <h2 className="text-lg font-bold text-white mb-6 text-center">Dil Seçin</h2>
+
+            <h2 className="text-white text-lg font-bold mb-6 text-center">
+              {t("languageSelector.selectLanguage")}
+            </h2>
+
             <div className="flex flex-col gap-2">
-              {LANGUAGES.map(lang => (
+              {LANGUAGES.map((lang) => (
                 <button
                   key={lang.code}
-                  className={`flex items-center gap-3 px-4 py-3 rounded-lg transition text-left text-white font-medium ${i18n.language === lang.code ? 'bg-gray-700' : 'hover:bg-gray-800'}`}
-                  onClick={() => { i18n.changeLanguage(lang.code); setOpen(false); }}
+                  onClick={() => changeLanguage(lang.code)}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-lg text-white font-medium transition
+                    ${
+                      currentLang === lang.code
+                        ? "bg-gray-700"
+                        : "hover:bg-gray-800"
+                    }
+                  `}
                 >
-                  <img src={lang.flag} alt={lang.label} className="w-7 h-7 rounded-full border border-gray-300" />
+                  <img
+                    src={lang.flag}
+                    alt={lang.label}
+                    className="w-7 h-7 rounded-full border"
+                  />
                   <span>{lang.label}</span>
                 </button>
               ))}
