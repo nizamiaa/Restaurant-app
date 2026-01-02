@@ -1,5 +1,3 @@
-// ...existing code...
-// (Move these route definitions after app is initialized below)
 const express = require('express');
 const cors = require('cors');
 const { sql, getPool } = require('./db');
@@ -9,7 +7,6 @@ app.use(cors());
 app.use(express.json());
 
 
-// Delete menu item (SQL-based, correct)
 app.delete('/api/menu/:id', async (req, res) => {
   const { id } = req.params;
   try {

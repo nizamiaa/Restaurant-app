@@ -203,37 +203,32 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
 
 
         const handleDeleteMenuItem = async (id: string) => {
-        if (!confirm(t("admin.confirmDeleteMenuItem"))) return;
+  if (!confirm(t("admin.confirmDeleteMenuItem"))) return;
 
-        try {
-          const response = await fetch(`http://localhost:4000/api/menu/${id}`,
-            {
-              method: "DELETE",
-            }
-          );
+  try {
+    const response = await fetch(`http://localhost:4000/api/menu/${id}`, { method: "DELETE" });
 
-          if (!response.ok) {
-            let errorMessage = "Xəta baş verdi";
-            try {
-              const errorData = await response.json();
-              errorMessage = errorData.message || errorMessage;
-            } catch (jsonError) {
-              errorMessage = response.statusText || errorMessage;
-            }
-            console.error(`Məhsul silinərkən xəta: ${response.status} - ${errorMessage}`);
-            toast.error(errorMessage);
-            return;
-          }
+    if (!response.ok) {
+      let errorMessage = "Xəta baş verdi";
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.message || errorMessage;
+      } catch {
+        errorMessage = response.statusText || errorMessage;
+      }
+      toast.error(errorMessage);
+      return;
+    }
 
-          const data = await response.json();
-          setMenu(data);
-          toast.success(t("admin.productDeletedSuccessfully"));
-        } catch (error) {
-          console.error("Məhsul silinərkən şəbəkə xətası və ya cavabın oxunmasında problem:", error);
-          toast.error(t("admin.errorOccurred"));
-        }
-      };
-    
+    // Burada artıq serverdən bütün menyunu gözləmirik, sadəcə state-i update edirik
+    setMenu((prevMenu) => prevMenu.filter((item) => item.id !== id));
+    toast.success(t("admin.productDeletedSuccessfully"));
+  } catch (error) {
+    console.error("Məhsul silinərkən şəbəkə xətası:", error);
+    toast.error(t("admin.errorOccurred"));
+  }
+};
+
 
   const handleUpdateOrderStatus = async (orderId: string, status: string) => {
     try {
@@ -258,24 +253,30 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   };
 
   const confirmDeleteOrder = async () => {
-    if (!orderToDelete) return;
+  if (!orderToDelete) return;
 
-    try {
-      await fetch(`http://localhost:4000/api/orders/${orderToDelete}`,
-        {
-          method: "DELETE",
-        }
-      );
-      fetchOrders();
-      toast.success(t("admin.orderDeletedSuccessfully"));
-    } catch (error) {
-      console.error(t("admin.errorOccurred"), error);
+  try {
+    const response = await fetch(`http://localhost:4000/api/orders/${orderToDelete}`, {
+      method: "DELETE",
+    });
+
+    if (!response.ok) {
       toast.error(t("admin.errorOccurred"));
-    } finally {
-      setDeleteDialogOpen(false);
-      setOrderToDelete(null);
+      return;
     }
-  };
+
+    setOrders(prevOrders => prevOrders.filter(order => order.id !== orderToDelete));
+
+    toast.success(t("admin.orderDeletedSuccessfully"));
+  } catch (error) {
+    console.error(t("admin.errorOccurred"), error);
+    toast.error(t("admin.errorOccurred"));
+  } finally {
+    setDeleteDialogOpen(false);
+    setOrderToDelete(null);
+  }
+};
+
 
   const deleteOldOrder = async (orderId: string) => {
     try {
@@ -314,19 +315,20 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   };
 
   const getStatusColor = (status: string) => {
-    switch (status) {
-      case "yeni":
-        return "bg-blue-100 text-blue-800";
-      case "{t('admin.preparing')}":
-        return "bg-yellow-100 text-yellow-800";
-      case "{t('admin.ready')}":
-        return "bg-green-100 text-green-800";
-      case "{t('admin.delivered')}":
-        return "bg-gray-100 text-gray-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
+  switch (status) {
+    case "yeni":
+      return "bg-blue-100 text-blue-800";
+    case t("admin.preparing"):
+      return "bg-yellow-100 text-yellow-800";
+    case t("admin.ready"):
+      return "bg-green-100 text-green-800";
+    case t("admin.delivered"):
+      return "bg-gray-100 text-gray-800";
+    default:
+      return "bg-gray-100 text-gray-800";
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-50">
