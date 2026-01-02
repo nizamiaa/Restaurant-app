@@ -192,9 +192,9 @@ app.get('/api/orders', async (req, res) => {
 
 
 app.post('/api/orders', async (req, res) => {
-  const { items, customerName, tableNumber, totalPrice } = req.body;
+  const { items, customerName, tableNumber, tableDescription, totalPrice } = req.body;
 
-  if (!items || !customerName || !tableNumber || !totalPrice) {
+  if (!items || !customerName || !tableNumber || !tableDescription || !totalPrice) {
     return res.status(400).json({ error: 'All fields are required' });
   }
 
@@ -209,13 +209,14 @@ app.post('/api/orders', async (req, res) => {
       .input('items', sql.NVarChar, JSON.stringify(items))
       .input('customerName', sql.NVarChar, customerName)
       .input('tableNumber', sql.NVarChar, tableNumber)
+      .input('tableDescription', sql.NVarChar, tableDescription)
       .input('totalPrice', sql.Decimal(10,2), total)
       .input('status', sql.NVarChar, 'received')
       .input('createdAt', sql.DateTime, new Date())
       .query(`
-        INSERT INTO Orders (items, customerName, tableNumber, totalPrice, status, createdAt)
+        INSERT INTO Orders (items, customerName, tableNumber, tableDescription, totalPrice, status, createdAt)
         OUTPUT INSERTED.*
-        VALUES (@items, @customerName, @tableNumber, @totalPrice, @status, @createdAt)
+        VALUES (@items, @customerName, @tableNumber, @tableDescription, @totalPrice, @status, @createdAt)
       `);
 
     res.status(201).json(result.recordset[0]);

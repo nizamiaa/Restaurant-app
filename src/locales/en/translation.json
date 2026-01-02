@@ -18,7 +18,8 @@
     "preparing": "Preparing shortly...",
     "name": "Your Name",
     "table": "Table Number",
-    "submit": "Place Order"
+    "submit": "Place Order",
+    "tableDescription": "Additional"
   },
   "landingpage": {
     "kitchen": "Traditional Azerbaijani cuisine now with online ordering",

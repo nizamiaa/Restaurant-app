@@ -21,7 +21,8 @@
     "preparing": "Tezliklə hazırlanacaq",
     "name": "Adınız",
     "table": "Masa nömrəsi",
-    "submit": "Sifariş et"
+    "submit": "Sifariş et",
+    "tableDescription": "Əlavə"
   },
 
   "landingpage": {

@@ -30,6 +30,7 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
   const [showCart, setShowCart] = useState(false);
   const [customerName, setCustomerName] = useState("");
   const [tableNumber, setTableNumber] = useState("");
+  const [tableDescription, setTableDescription] = useState("");
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -113,7 +114,7 @@ const scrollToTop = () => {
   };
 
   const handleOrder = async () => {
-    if (!customerName || !tableNumber || cart.length === 0) {
+    if (!customerName || !tableNumber || !tableDescription || cart.length === 0) {
       toast.error(t("order.fillAll"));
       return;
     }
@@ -128,6 +129,7 @@ const scrollToTop = () => {
           body: JSON.stringify({
             customerName,
             tableNumber,
+            tableDescription,
             items: cart,
             totalPrice: getTotalPrice(),
           }),
@@ -140,6 +142,7 @@ const scrollToTop = () => {
           setCart([]);
           setCustomerName("");
           setTableNumber("");
+          setTableDescription("");
           setShowCart(false);
           setOrderSuccess(false);
         }, 3000);
@@ -383,6 +386,13 @@ const scrollToTop = () => {
                           placeholder={t("order.table")}
                           value={tableNumber}
                           onChange={(e) => setTableNumber(e.target.value)}
+                          className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-600"
+                        />
+                        <input
+                          type="text"
+                          placeholder={t("order.tableDescription")}
+                          value={tableDescription}
+                          onChange={(e) => setTableDescription(e.target.value)}
                           className="w-full border border-gray-300 rounded-lg px-4 py-3 focus:outline-none focus:ring-2 focus:ring-red-600"
                         />
                         <button

@@ -18,6 +18,7 @@ interface Order {
   id: string;
   customerName: string;
   tableNumber: string;
+  tableDescription: string;
   items: Array<{ name: string; quantity: number; price: number }>;
   totalPrice: number;
   status: string;
@@ -91,6 +92,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
       ...o,
       customerName: o.customerName,
       tableNumber: o.tableNumber,
+      tableDescription: o.tableDescription,
       totalPrice: o.totalPrice,
       status: o.status,
       createdAt: o.createdAt,
@@ -409,6 +411,11 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
                         <p className="text-gray-600">
                           {t("order.table")}: {order.tableNumber}
                         </p>
+                        {order.tableDescription && (
+                          <p className="text-gray-600">
+                            {t("order.tableDescription")}: {order.tableDescription}
+                          </p>
+                        )}
                         <p className="text-sm text-gray-500">
                           {new Date(order.createdAt).toLocaleString("az-AZ")}
                         </p>
