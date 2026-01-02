@@ -132,26 +132,6 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const JWT_SECRET = process.env.JWT_SECRET || 'supersecretkey';
 
-// Register
-app.post('/api/auth/register', async (req, res) => {
-  const { username, password, language } = req.body;
-  if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
-  try {
-    const pool = await getPool();
-    const result = await pool.request()
-      .input('username', sql.NVarChar, username)
-      .input('password', sql.NVarChar, password)
-      .input('language', sql.NVarChar, language || 'en')
-      .query('INSERT INTO Users (username, password, language) OUTPUT INSERTED.id, INSERTED.username, INSERTED.language VALUES (@username, @password, @language)');
-    const user = result.recordset[0];
-    const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET);
-    res.json({ token, user });
-  } catch (err) {
-    if (err.message.includes('UNIQUE')) return res.status(409).json({ error: 'Username already exists' });
-    res.status(500).json({ error: 'Registration failed', details: err.message });
-  }
-});
-
 // Login
 app.post('/api/auth/login', async (req, res) => {
   const { username, password } = req.body || {};
@@ -266,8 +246,10 @@ app.get('/api/feedback', async (req, res) => {
 
 app.post('/api/feedback', async (req, res) => {
   const { name, email, type, message, createdAt, rating } = req.body;
+
   try {
     const pool = await getPool();
+
     const result = await pool.request()
       .input('name', sql.NVarChar, name)
       .input('email', sql.NVarChar, email)
@@ -275,12 +257,41 @@ app.post('/api/feedback', async (req, res) => {
       .input('message', sql.NVarChar, message)
       .input('createdAt', sql.DateTime, createdAt)
       .input('rating', sql.Int, rating)
-      .query('INSERT INTO Feedback (name, email, type, message, createdAt, rating) OUTPUT INSERTED.* VALUES (@name, @email, @type, @message, @createdAt, @rating)');
-    res.status(201).json(result.recordset[0]);
+      .query(`
+        INSERT INTO Feedback (name, email, type, message, createdAt, rating)
+        OUTPUT INSERTED.*
+        VALUES (@name, @email, @type, @message, @createdAt, @rating)
+      `);
+
+    const newFeedback = result.recordset[0];
+
+    const countResult = await pool.request().query('SELECT COUNT(*) AS cnt FROM Feedback');
+    const count = countResult.recordset[0].cnt;
+
+    const MAX_FEEDBACK = 30;
+
+    if (count > MAX_FEEDBACK) {
+      const toDeleteCount = count - MAX_FEEDBACK;
+
+      await pool.request()
+        .input('deleteCount', sql.Int, toDeleteCount)
+        .query(`
+          DELETE FROM Feedback
+          WHERE id IN (
+            SELECT TOP (@deleteCount) id
+            FROM Feedback
+            ORDER BY createdAt ASC
+          )
+        `);
+    }
+
+    res.status(201).json(newFeedback);
   } catch (err) {
+    console.error(err);
     res.status(500).json({ error: 'Failed to add feedback', details: err.message });
   }
 });
+
 
 app.get('/', (req, res) => {
   res.send('Restaurant backend running');

@@ -4,11 +4,10 @@ import LandingPage from "./components/LandingPage";
 import MenuView from "./components/MenuView";
 import AdminDashboard from "./components/AdminDashboard";
 import { AdminLogin } from "./components/AdminLogin";
-import { Register } from "./components/Register";
 import { Feedback } from "./components/Feedback";
 
 const App: React.FC = () => {
-  const [view, setView] = useState<"landing" | "customer" | "admin" | "login" | "feedback" | "register">("landing");
+  const [view, setView] = useState<"landing" | "customer" | "admin" | "login" | "feedback">("landing");
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [user, setUser] = useState<any>(null);
   const { t, i18n } = useTranslation();
@@ -29,10 +28,6 @@ const App: React.FC = () => {
     setIsAdminAuthenticated(true);
     setUser(userData || null);
     setView("admin");
-  };
-
-  const handleRegister = () => {
-    setView("login");
   };
 
   const handleAdminLogout = () => {
@@ -65,12 +60,8 @@ const App: React.FC = () => {
       {view === "login" && (
         <>
           <AdminLogin onLogin={handleAdminLogin} />
-          <div style={{ textAlign: 'center', marginTop: 16 }}>
-            <button onClick={() => setView('register')} className="text-blue-600 underline">{t('register')}</button>
-          </div>
         </>
       )}
-      {view === "register" && <Register onRegister={handleRegister} />}
       {isAdminAuthenticated}
       {view === "admin" && isAdminAuthenticated && (
       <AdminDashboard onLogout={handleAdminLogout} role={user?.role || "limited"} />
