@@ -16,7 +16,6 @@ export const LanguageSelector: React.FC = () => {
   const ref = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
 
-  // 🔹 outside click → close
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
@@ -27,7 +26,6 @@ export const LanguageSelector: React.FC = () => {
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  // 🔹 update state when i18n.language changes
   useEffect(() => {
     const handleLanguageChange = (lng: string) => setCurrentLang(lng);
     i18n.on("languageChanged", handleLanguageChange);

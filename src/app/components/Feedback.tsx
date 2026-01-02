@@ -90,7 +90,6 @@ export function Feedback({ onBack }: FeedbackProps) {
           message: "",
           rating: 0,
         });
-        // Yeni feedback əlavə olunduqdan sonra yenilə
         fetchAllFeedback();
       } else {
         toast.error(t('feedback.submissionFailed'));

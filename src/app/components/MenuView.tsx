@@ -3,6 +3,7 @@ import { ShoppingCart, Plus, Minus, CircleCheckBig, ArrowLeft } from "lucide-rea
 import { toast } from "sonner";
 import { useTranslation } from "react-i18next";
 import { LanguageSelector } from "./LanguageSelector";
+import { ArrowUp } from "lucide-react";
 
 interface MenuItem {
   id: string;
@@ -33,6 +34,7 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchInput, setSearchInput] = useState("");
+  const [showScrollBtn, setShowScrollBtn] = useState(false);
   const { t } = useTranslation();
   const categoryMap: Record<string, string> = {
     "Əsas yeməklər": t("admin.mainDishes"),
@@ -45,6 +47,28 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
   useEffect(() => {
     fetchMenu();
   }, []);
+
+  useEffect(() => {
+  const handleScroll = () => {
+    if (window.scrollY > 300) {
+      setShowScrollBtn(true);
+    } else {
+      setShowScrollBtn(false);
+    }
+  };
+
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+
+
+const scrollToTop = () => {
+  window.scrollTo({
+    top: 0,
+    behavior: "smooth",
+  });
+};
+
 
   const fetchMenu = async () => {
     try {
@@ -376,6 +400,16 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
           </div>
         </div>
       )}
+      {showScrollBtn && (
+      <button onClick={scrollToTop}
+              className="fixed bottom-6 right-6 z-50 bg-red-600 text-white
+                         h-12 w-12 rounded-full shadow-lg
+                         hover:bg-red-700 transition
+                         flex items-center justify-center"
+              aria-label="Scroll to top">
+        <ArrowUp className="w-6 h-6" />
+      </button>
+    )}
     </div>
   );
 }
