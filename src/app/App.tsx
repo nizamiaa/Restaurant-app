@@ -73,7 +73,7 @@ const App: React.FC = () => {
       {view === "register" && <Register onRegister={handleRegister} />}
       {isAdminAuthenticated}
       {view === "admin" && isAdminAuthenticated && (
-        <AdminDashboard onLogout={handleAdminLogout} />
+      <AdminDashboard onLogout={handleAdminLogout} role={user?.role || "limited"} />
       )}
       {view === "customer" && <MenuView onBack={handleBackToLanding} />}
       {view === "feedback" && <Feedback onBack={handleBackToLanding} />}

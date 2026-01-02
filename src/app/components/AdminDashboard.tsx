@@ -37,9 +37,10 @@ interface Feedback {
 
 interface AdminDashboardProps {
   onLogout: () => void;
+  role: "admin" | "limited";
 }
 
-const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
+const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, role }) => {
   const [activeTab, setActiveTab] = useState<"menu" | "orders" | "feedback">("orders");
   const [menu, setMenu] = useState<MenuItem[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -66,12 +67,12 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
   };
 
   useEffect(() => {
-    fetchMenu();
+    if (role === "admin") fetchMenu();
     fetchOrders();
     fetchFeedback();
     const interval = setInterval(fetchOrders, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [role]);
 
   const fetchMenu = async () => {
     try {
@@ -368,17 +369,19 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
             <ShoppingBag className="size-5" />
             {t("admin.orders")}
           </button>
-          <button
-            onClick={() => setActiveTab("menu")}
-            className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
-              activeTab === "menu"
-                ? "bg-red-600 text-white"
-                : "bg-white text-gray-700 hover:bg-gray-100"
-            }`}
-          >
-            <Package className="size-5" />
-            {t("admin.menuManagement")}
-          </button>
+          {role === "admin" && (
+            <button
+              onClick={() => setActiveTab("menu")}
+              className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
+                activeTab === "menu"
+                  ? "bg-red-600 text-white"
+                  : "bg-white text-gray-700 hover:bg-gray-100"
+              }`}
+            >
+              <Package className="size-5" />
+              {t("admin.menuManagement")}
+            </button>
+          )}
           <button
             onClick={() => setActiveTab("feedback")}
             className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
@@ -491,8 +494,8 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout }) => {
           </div>
         )}
 
-        {/* Menu Tab */}
-        {activeTab === "menu" && (
+        {/* Menu Tab (only for admin) */}
+        {role === "admin" && activeTab === "menu" && (
           <div>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">{t("admin.menuManagement")}</h2>
