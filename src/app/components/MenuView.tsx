@@ -295,7 +295,7 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
         <img
           src={selectedProduct.imageUrl}
           alt={selectedProduct.name}
-          className="w-70 h-48 object-cover cursor-pointer rounded-lg"
+          className="w-90 h-60 object-cover cursor-pointer rounded-lg"
         />
 
         {/* Info */}
@@ -303,7 +303,7 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
           <div>
             <p className="text-gray-600 mb-4">{selectedProduct.description}</p>
             <p className="text-gray-500 mb-2">
-              Kateqoriya: {selectedProduct.category}
+              {t("menu.category")} {selectedProduct.category}
             </p>
           </div>
 
@@ -319,7 +319,7 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
               }}
               className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition"
             >
-              Səbətə əlavə et
+              {t("menu.addToCart")}
             </button>
           </div>
         </div>
