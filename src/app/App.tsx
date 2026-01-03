@@ -7,9 +7,13 @@ import { AdminLogin } from "./components/AdminLogin";
 import { Feedback } from "./components/Feedback";
 
 const App: React.FC = () => {
-  const [view, setView] = useState<"landing" | "customer" | "admin" | "login" | "feedback">("landing");
+  const [view, setView] = useState<
+    "landing" | "customer" | "admin" | "login" | "feedback"
+  >("landing");
+
   const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
   const [user, setUser] = useState<any>(null);
+
   const { t, i18n } = useTranslation();
 
   useEffect(() => {
@@ -22,7 +26,6 @@ const App: React.FC = () => {
       }
     }
   }, []);
-  
 
   const handleAdminLogin = (userData?: any) => {
     setIsAdminAuthenticated(true);
@@ -36,37 +39,36 @@ const App: React.FC = () => {
     setView("landing");
   };
 
-  const handleViewMenu = () => {
-    setView("customer");
-  };
-
-  const handleViewFeedback = () => {
-    setView("feedback");
-  };
-
-  const handleBackToLanding = () => {
-    setView("landing");
-  };
+  const handleViewMenu = () => setView("customer");
+  const handleViewFeedback = () => setView("feedback");
+  const handleBackToLanding = () => setView("landing");
 
   return (
     <div className="size-full">
       {view === "landing" && (
-        <LandingPage 
+        <LandingPage
           onViewMenu={handleViewMenu}
           onViewFeedback={handleViewFeedback}
           onAdminAccess={() => setView("login")}
         />
       )}
-      {view === "login" && (
-        <>
-          <AdminLogin onLogin={handleAdminLogin} />
-        </>
-      )}
-      {isAdminAuthenticated}
+
+      {view === "login" && <AdminLogin onLogin={handleAdminLogin} />}
+
       {view === "admin" && isAdminAuthenticated && (
-      <AdminDashboard onLogout={handleAdminLogout} role={user?.role || "limited"} />
+        <AdminDashboard
+          onLogout={handleAdminLogout}
+          role={user?.role || "limited"}
+        />
       )}
-      {view === "customer" && <MenuView onBack={handleBackToLanding} />}
+
+      {view === "customer" && (
+        <MenuView
+          onBack={handleBackToLanding}
+        />
+      )}
+
+
       {view === "feedback" && <Feedback onBack={handleBackToLanding} />}
     </div>
   );
