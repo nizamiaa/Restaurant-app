@@ -33,6 +33,8 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [searchInput, setSearchInput] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [suggestions, setSuggestions] = useState<MenuItem[]>([]);
   const [showScrollBtn, setShowScrollBtn] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<MenuItem | null>(null);
 
@@ -46,6 +48,29 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
     "Başlanğıclar": t("admin.appetizers"),
   };
 
+  const handleSearchInputChange = (value: string) => {
+  setSearchInput(value);
+
+  if (value.trim().length === 0) {
+    setSuggestions([]);
+    setShowSuggestions(false);
+    return;
+  }
+
+  const q = value.toLowerCase();
+
+  const filtered = menu.filter(
+    item =>
+      item.name.toLowerCase().includes(q) ||
+      item.description.toLowerCase().includes(q)
+  );
+
+  setSuggestions(filtered.slice(0, 5));
+  setShowSuggestions(true);
+};
+
+
+
   useEffect(() => {
     fetchMenu();
   }, []);
@@ -55,6 +80,14 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+  const close = () => setShowSuggestions(false);
+  window.addEventListener("click", close);
+  return () => window.removeEventListener("click", close);
+}, []);
+
+
 
   const fetchMenu = async () => {
     try {
@@ -169,22 +202,95 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
       {/* Search & Filter */}
       <div className="bg-gradient-to-r from-red-50 to-red-100 shadow-md">
         <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-6 items-center justify-center">
-          <div className="flex items-center bg-white rounded-full shadow-sm border border-gray-200 overflow-hidden w-full max-w-md">
-            <input type="text" placeholder={t("menu.searchPlaceholder")} value={searchInput} onChange={(e) => setSearchInput(e.target.value)} className="flex-1 px-4 py-3 focus:outline-none" />
-            <button onClick={() => setSearchQuery(searchInput)} className="bg-red-600 text-white px-6 py-3 hover:bg-red-700 transition font-semibold">{t("menu.searchBtn")}</button>
-          </div>
-          <div className="flex flex-col gap-2 items-center">
-            <span className="text-gray-700 font-medium mb-1">{t("menu.category")}</span>
-            <div className="flex flex-wrap gap-2 justify-center">
-              {categories.map(cat => (
-                <button key={cat} onClick={() => setSelectedCategory(cat)} className={`px-4 py-2 rounded-full font-semibold border transition ${selectedCategory === cat ? 'bg-red-600 text-white border-red-600 shadow-lg scale-105' : 'bg-white text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400'}`}>
-                  {cat === "all" ? t("menu.all") : (categoryMap[cat] || cat)}
-                </button>
-              ))}
-            </div>
-          </div>
+
+        <div className="relative w-full max-w-md">
+      <div className="flex items-center bg-white rounded-full shadow-sm border border-gray-200 overflow-hidden">
+        <input
+          type="text"
+          placeholder={t("menu.searchPlaceholder")}
+          value={searchInput}
+          onChange={(e) => handleSearchInputChange(e.target.value)}
+          onFocus={() => searchInput && setShowSuggestions(true)}
+          className="flex-1 px-4 py-3 focus:outline-none"
+        />
+        <button
+          onClick={() => {
+            setSearchQuery(searchInput);
+            setShowSuggestions(false);
+          }}
+          className="bg-red-600 text-white px-6 py-3 hover:bg-red-700 transition font-semibold"
+        >
+          {t("menu.searchBtn")}
+        </button>
+      </div>
+
+      {showSuggestions && suggestions.length > 0 && (
+        <div
+          onClick={(e) => e.stopPropagation()}
+          className="absolute top-full mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden"
+        >
+          {suggestions.map((item) => (
+  <button
+    key={item.id}
+    onClick={() => {
+      setSearchInput(item.name);
+      setSearchQuery(item.name);
+      setShowSuggestions(false);
+    }}
+    className="w-full px-4 py-3 hover:bg-red-50 transition flex items-center gap-3"
+  >
+    <img
+      src={item.imageUrl}
+      alt={item.name}
+      className="w-10 h-10 rounded-md object-cover flex-shrink-0"
+    />
+
+    <div className="flex-1 text-left">
+      <p className="font-medium text-gray-800 leading-tight">
+        {item.name}
+      </p>
+      <p className="text-xs text-gray-500 truncate">
+        {item.description}
+      </p>
+    </div>
+
+    <span className="text-sm font-semibold text-gray-600 whitespace-nowrap">
+      ₼{item.price.toFixed(2)}
+    </span>
+  </button>
+))}
+
+        </div>
+      )}
+        </div>
+
+    <div className="flex flex-col gap-2 items-center">
+      <span className="text-gray-700 font-medium mb-1">
+        {t("menu.category")}
+      </span>
+      <div className="flex flex-wrap gap-2 justify-center">
+        {categories.map((cat) => (
+          <button
+            key={cat}
+            onClick={() => setSelectedCategory(cat)}
+            className={`px-4 py-2 rounded-full font-semibold border transition ${
+              selectedCategory === cat
+                ? "bg-red-600 text-white border-red-600 shadow-lg scale-105"
+                : "bg-white text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400"
+            }`}
+          >
+            {cat === "all"
+              ? t("menu.all")
+              : categoryMap[cat] || cat}
+          </button>
+        ))}
+      </div>
+    </div>
+
         </div>
       </div>
+
+
 
       {/* Menu Grid */}
       <main className="max-w-7xl mx-auto px-4 py-8">
@@ -197,7 +303,7 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
                 <p className="text-gray-600 text-sm mb-4">{item.description}</p>
                 <p className="text-gray-500 text-sm mb-2">{categoryMap[item.category] || item.category}</p>
                 <div className="flex justify-between items-center">
-                  <span className="text-red-600 font-bold text-xl">₼{item.price.toFixed(2)}</span>
+                  <span className="text-red-600 font-bold text-xfl">₼{item.price.toFixed(2)}</span>
                   <button onClick={() => addToCart(item)} className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition flex items-center gap-2">
                     <Plus className="size-4" /> {t("menu.addToCart")}
                   </button>
