@@ -204,15 +204,29 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
         <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-6 items-center justify-center">
 
         <div className="relative w-full max-w-md">
-      <div className="flex items-center bg-white rounded-full shadow-sm border border-gray-200 overflow-hidden">
+          <div className="flex items-center bg-white rounded-full shadow-sm border border-gray-200 overflow-hidden">
         <input
           type="text"
           placeholder={t("menu.searchPlaceholder")}
           value={searchInput}
           onChange={(e) => handleSearchInputChange(e.target.value)}
           onFocus={() => searchInput && setShowSuggestions(true)}
+          onKeyDown={(e) => {
+            if(e.key === "Enter"){
+              setSearchQuery(searchInput);
+              setShowSuggestions(false);
+            }
+          }}
           className="flex-1 px-4 py-3 focus:outline-none"
         />
+
+         {searchInput && (
+          <button
+          onClick={() => setSearchInput("")}
+          className="absolute right-27 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+          > ✕ </button>
+         )}
+
         <button
           onClick={() => {
             setSearchQuery(searchInput);
@@ -222,7 +236,7 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
         >
           {t("menu.searchBtn")}
         </button>
-      </div>
+          </div>
 
       {showSuggestions && suggestions.length > 0 && (
         <div
@@ -289,8 +303,6 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
 
         </div>
       </div>
-
-
 
       {/* Menu Grid */}
       <main className="max-w-7xl mx-auto px-4 py-8">
