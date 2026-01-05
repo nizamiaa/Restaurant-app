@@ -64,6 +64,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, role }) => {
     "İçkilər": t("admin.drinks"),
     "Salatlar": t("admin.salads"),
     "Başlanğıclar": t("admin.appetizers"),
+    "Xüsusi təkliflər": t("admin.specialOffers"),
   };
 
   useEffect(() => {
@@ -660,6 +661,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onLogout, role }) => {
                 <option value="İçkilər">{t("admin.drinks")}</option>
                 <option value="Salatlar">{t("admin.salads")}</option>
                 <option value="Başlanğıclar">{t("admin.appetizers")}</option>
+                <option value="Xüsusi təkliflər">{t("admin.specialOffers")}</option>
               </select>
               <input
                 type="text"

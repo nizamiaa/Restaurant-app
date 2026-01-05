@@ -1,6 +1,7 @@
 import { ChefHat, QrCode, ShoppingBag, Clock, Star, MapPin, Phone, Mail, Menu as MenuIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import { LanguageSelector } from "./LanguageSelector";
+import { useEffect, useState } from "react";
 
 interface LandingPageProps {
   onViewMenu: () => void;
@@ -8,8 +9,39 @@ interface LandingPageProps {
   onAdminAccess: () => void;
 }
 
-const LandingPage: React.FC<LandingPageProps> = ({ onViewMenu, onViewFeedback, onAdminAccess }) => {
+interface MenuItem {
+  id: string;
+  name: string;
+  description: string;
+  imageUrl: string;
+  category: string;
+}
+
+
+const LandingPage: React.FC<LandingPageProps> = ({ onViewMenu, onViewFeedback}) => {
   const { t } = useTranslation();
+  const [popularDishes, setPopularDishes] = useState<MenuItem[]>([]);
+
+
+  useEffect(() => {
+  const fetchPopularDishes = async () => {
+    try {
+      const res = await fetch("http://localhost:4000/api/menu");
+      const data: MenuItem[] = await res.json();
+
+      const specials = data
+        .filter(item => item.category === "Xüsusi təkliflər")
+        .slice(0, 3);
+
+      setPopularDishes(specials);
+    } catch (error) {
+      console.error("Popular dishes error:", error);
+    }
+  };
+
+  fetchPopularDishes();
+}, []);
+
 
   return (
     <div className="min-h-screen bg-white">
@@ -40,13 +72,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onViewMenu, onViewFeedback, o
             >
               {t("landingpage.feedback")}
             </button>
-          </div>
-        </div>
-
-        {/* Scroll indicator */}
-        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
-          <div className="w-6 h-10 border-2 border-white rounded-full flex justify-center">
-            <div className="w-1 h-3 bg-white rounded-full mt-2"></div>
           </div>
         </div>
       </section>
@@ -97,69 +122,37 @@ const LandingPage: React.FC<LandingPageProps> = ({ onViewMenu, onViewFeedback, o
             {t("landingpage.popularDishes")}
           </h2>
           <div className="grid md:grid-cols-3 gap-8">
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:scale-105">
-              <img
-                src="https://images.unsplash.com/photo-1596560548464-f010549b84d7?w=600"
-                alt="Plov"
-                className="w-full h-64 object-cover"
-              />
-              <div className="p-6">
-                <h3 className="text-2xl font-bold mb-2">{t("landingpage.riceDish")}</h3>
-                <p className="text-gray-600 mb-4">
-                  {t("landingpage.traditionalRiceDish")}
-                </p>
-                <div className="flex items-center text-yellow-500">
-                  <Star className="size-5 fill-current" />
-                  <Star className="size-5 fill-current" />
-                  <Star className="size-5 fill-current" />
-                  <Star className="size-5 fill-current" />
-                  <Star className="size-5 fill-current" />
-                </div>
-              </div>
-            </div>
+            {popularDishes.map((item) => (
+              <div
+                key={item.id}
+                className="bg-white rounded-xl shadow-lg overflow-hidden
+                          hover:shadow-2xl transition transform hover:scale-105"
+              >
+                <img
+                  src={item.imageUrl}
+                  alt={item.name}
+                  className="w-full h-64 object-cover"
+                />
 
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:scale-105">
-              <img
-                src="https://images.unsplash.com/photo-1603360946369-dc9bb6258143?w=600"
-                alt="Kabab"
-                className="w-full h-64 object-cover"
-              />
-              <div className="p-6">
-                <h3 className="text-2xl font-bold mb-2">{t("landingpage.lambKebab")}</h3>
-                <p className="text-gray-600 mb-4">
-                  {t("landingpage.handmadeFreshLambKebab")}
-                </p>
-                <div className="flex items-center text-yellow-500">
-                  <Star className="size-5 fill-current" />
-                  <Star className="size-5 fill-current" />
-                  <Star className="size-5 fill-current" />
-                  <Star className="size-5 fill-current" />
-                  <Star className="size-5 fill-current" />
-                </div>
-              </div>
-            </div>
+                <div className="p-6">
+                  <h3 className="text-2xl font-bold mb-2">
+                    {item.name}
+                  </h3>
 
-            <div className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-2xl transition transform hover:scale-105">
-              <img
-                src="https://www.giverecipe.com/wp-content/uploads/2016/08/Dolmades-in-a-pot-500x500.jpg"
-                alt="Dolma"
-                className="w-full h-64 object-cover"
-              />
-              <div className="p-6">
-                <h3 className="text-2xl font-bold mb-2">{t("landingpage.dolma")}</h3>
-                <p className="text-gray-600 mb-4">
-                  {t("landingpage.freshGrapeLeafMeatDolma")}
-                </p>
-                <div className="flex items-center text-yellow-500">
-                  <Star className="size-5 fill-current" />
-                  <Star className="size-5 fill-current" />
-                  <Star className="size-5 fill-current" />
-                  <Star className="size-5 fill-current" />
-                  <Star className="size-5 fill-current" />
+                  <p className="text-gray-600 mb-4">
+                    {item.description}
+                  </p>
+
+                  <div className="flex items-center text-yellow-500">
+                    {[1,2,3,4,5].map(i => (
+                      <Star key={i} className="size-5 fill-current" />
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
           </div>
+
 
           <div className="text-center mt-12">
             <button

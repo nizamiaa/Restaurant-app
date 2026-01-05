@@ -46,6 +46,7 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
     "İçkilər": t("admin.drinks"),
     "Salatlar": t("admin.salads"),
     "Başlanğıclar": t("admin.appetizers"),
+    "Xüsusi təkliflər": t("admin.specialOffers"),
   };
 
   const handleSearchInputChange = (value: string) => {
@@ -157,11 +158,17 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
 
   const categories = ["all", ...Array.from(new Set(menu.map((item) => item.category)))];
 
-  const filteredMenu = menu.filter(item => 
-    (selectedCategory === "all" || item.category === selectedCategory) &&
-    (item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-     item.description.toLowerCase().includes(searchQuery.toLowerCase()))
-  );
+  const filteredMenu = menu
+    .filter(item => 
+      (selectedCategory === "all" || item.category === selectedCategory) &&
+      (item.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      item.description.toLowerCase().includes(searchQuery.toLowerCase()))
+    )
+    .sort((a, b) => {
+      if (a.category.toLowerCase() === "xüsusi təkliflər") return -1;
+      if (b.category.toLowerCase() === "xüsusi təkliflər") return 1;
+      return 0;
+    });
 
   if (loading) return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -309,7 +316,19 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredMenu.map(item => (
             <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
-              <img src={item.imageUrl} alt={item.name} className="w-full h-48 object-cover cursor-pointer" onClick={() => setSelectedProduct(item)} />
+              <div className="relative">
+                {item.category.toLowerCase() === "xüsusi təkliflər" && (
+                  <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md z-10">
+                    {t("menu.specialOffer")}
+                  </span>
+                )}
+                <img
+                  src={item.imageUrl}
+                  alt={item.name}
+                  className="w-full h-48 object-cover cursor-pointer"
+                  onClick={() => setSelectedProduct(item)}
+                />
+              </div>
               <div className="p-4">
                 <h3 className="font-bold text-lg mb-2">{item.name}</h3>
                 <p className="text-gray-600 text-sm mb-4">{item.description}</p>

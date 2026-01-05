@@ -6,7 +6,8 @@
     "searchBtn": "Найти",
     "category": "Категория:",
     "addToCart": "Добавить в корзину",
-    "all": "Все"
+    "all": "Все",
+    "specialOffer": "Специальное предложение"
   },
   "languageSelector": {
     "selectLanguage": "Выберите язык"
@@ -114,6 +115,7 @@
     "drinks": "Напитки",
     "salads": "Салаты",
     "appetizers": "Закуски",
+    "specialOffers": "Специальные предложения",
     "confirmDeleteOrder": "Удалить заказ",
     "confirmDeleteOrderDescription": "Вы уверены, что хотите удалить этот заказ? Это действие необратимо."
   },

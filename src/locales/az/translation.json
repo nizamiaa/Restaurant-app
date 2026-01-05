@@ -7,7 +7,8 @@
     "category": "Kateqoriya:",
     "addToCart": "Əlavə et",
     "all": "Hamısı",
-    "errorLoad": "Menyu yüklənərkən xəta baş verdi"
+    "errorLoad": "Menyu yüklənərkən xəta baş verdi",
+    "specialOffer": "Xüsusi təklif"
   },
 
   "languageSelector": {
@@ -118,6 +119,7 @@
     "drinks": "İçkilər",
     "salads": "Salatlar",
     "appetizers": "Başlanğıclar",
+    "specialOffers": "Xüsusi təkliflər",
     "confirmDeleteOrder": "Sifarişi silmək",
     "confirmDeleteOrderDescription": "Bu sifarişi silmək istədiyinizdən əminsiniz? Bu əməliyyat geri qaytarıla bilməz."
   },
