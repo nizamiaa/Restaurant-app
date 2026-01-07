@@ -57,50 +57,71 @@ export function Feedback({ onBack }: FeedbackProps) {
 
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    if (!formData.name || !formData.message) {
-      toast.error(t('feedback.fillRequiredFields'));
-      return;
-    }
-    if (formData.rating < 1) {
-      toast.error(t('feedback.ratingRequired') || 'Please give at least 1 star.');
-      return;
-    }
+  if (!formData.name || !formData.message) {
+    toast.error(t('feedback.fillRequiredFields'));
+    return;
+  }
+  if (formData.rating < 1) {
+    toast.error(t('feedback.ratingRequired') || 'Please give at least 1 star.');
+    return;
+  }
 
-    setLoading(true);
-    try {
-      const response = await fetch('http://localhost:4000/api/feedback', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...formData,
-          createdAt: new Date().toISOString(),
-        }),
-      });
+  setLoading(true);
+  try {
+    // 1️⃣ Feedback serverə göndərilir
+    const response = await fetch('http://localhost:4000/api/feedback', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        ...formData,
+        createdAt: new Date().toISOString(),
+      }),
+    });
 
-      if (response.ok) {
-        toast.success(t('feedback.thankYou'));
-        setFormData({
-          name: "",
-          email: "",
-          type: "comment",
-          message: "",
-          rating: 0,
-        });
-        fetchAllFeedback();
-      } else {
-        toast.error(t('feedback.submissionFailed'));
+    if (response.ok) {
+      toast.success(t('feedback.thankYou'));
+
+      // 2️⃣ Əgər müştəri email daxil edibse, təşəkkür mesajı göndər
+      if (formData.email) {
+        try {
+          await fetch('http://localhost:4000/api/send-thankyou-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: formData.email,
+              name: formData.name,
+            }),
+          });
+          toast.success(t('feedback.thankYouEmailSent'));
+        } catch (error) {
+          console.error('Email göndərilmədi:', error);
+        }
       }
-    } catch (error) {
-      console.error(t('feedback.errorOccurred'), error);
-      toast.error(t('feedback.errorOccurred'));
-    } finally {
-      setLoading(false);
+
+      // Formu sıfırla və feedback-ləri yenilə
+      setFormData({
+        name: "",
+        email: "",
+        type: "comment",
+        message: "",
+        rating: 0,
+      });
+      fetchAllFeedback();
+    } else {
+      toast.error(t('feedback.submissionFailed'));
     }
-  };
+  } catch (error) {
+    console.error(t('feedback.errorOccurred'), error);
+    toast.error(t('feedback.errorOccurred'));
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-50">

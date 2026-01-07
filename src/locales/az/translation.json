@@ -84,7 +84,8 @@
     "rating": "Reytinq *",
     "averageRating": "Orta Reytinq",
     "ratingRequired": "Zəhmət olmasa reytinq xanasını doldurun",
-    "privacyMessage": "Göndərdiyiniz məlumatlar yalnız xidmətimizi yaxşılaşdırmaq üçün istifadə olunacaq."
+    "privacyMessage": "Göndərdiyiniz məlumatlar yalnız xidmətimizi yaxşılaşdırmaq üçün istifadə olunacaq.",
+    "thankYouEmailSent": "Təşəkkür emaili göndərildi"
   },
 
   "admin": {

@@ -79,7 +79,8 @@
       "rating": "Rating *",
       "averageRating": "Average Rating",
       "ratingRequired": "Please fill in the rating field",
-      "privacyMessage": "The information you provide will only be used to improve our service."
+      "privacyMessage": "The information you provide will only be used to improve our service.",
+      "thankYouEmailSent": "Thank you email sent"
   },
   "admin": {
     "errorLoadingOrders": "An error occurred while loading orders",
