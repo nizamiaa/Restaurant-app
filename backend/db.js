@@ -1,10 +1,9 @@
-const sql = require('mssql/msnodesqlv8');
-
+const sql = require("mssql/msnodesqlv8");
+require("dotenv").config();
 
 const config = {
-  connectionString: 'Driver={ODBC Driver 17 for SQL Server};Server=localhost\\SQLEXPRESS;Database=RESTAURANTWEBAPP;Trusted_Connection=Yes;TrustServerCertificate=Yes;'
+  connectionString: process.env.DB_CONNECTION_STRING
 };
-
 
 let pool;
 
@@ -22,11 +21,11 @@ if (require.main === module) {
   (async () => {
     try {
       const pool = await getPool();
-      await pool.request().query('SELECT 1 AS test');
-      console.log('✅ Database connection successful!');
+      await pool.request().query("SELECT 1 AS test");
+      console.log("✅ Database connection successful!");
       process.exit(0);
     } catch (err) {
-      console.error('❌ Database connection failed:', err);
+      console.error("❌ Database connection failed:", err);
       process.exit(1);
     }
   })();
