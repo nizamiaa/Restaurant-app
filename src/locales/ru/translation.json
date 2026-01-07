@@ -57,6 +57,7 @@
     "allRightsReserved": "Все права защищены."
   },
   "feedback": {
+    "feedbacksCount": "Количество отзывов: ",
       "fillRequiredFields": "Пожалуйста, введите ваше имя и сообщение",
       "thankYou": "Спасибо за ваш отзыв!",
       "submissionFailed": "Произошла ошибка при отправке отзыва",

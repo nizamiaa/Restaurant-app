@@ -68,7 +68,7 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
 
   setSuggestions(filtered.slice(0, 5));
   setShowSuggestions(true);
-};
+  };
 
 
 
@@ -180,136 +180,170 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-white shadow-sm sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <div className="flex items-center gap-4">
-            {onBack && (
-              <button onClick={onBack} className="p-2 hover:bg-gray-100 rounded-lg transition" aria-label="Geri">
-                <ArrowLeft className="size-6 text-gray-700" />
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          
+          {/* TOP ROW */}
+          <div className="flex items-center justify-between gap-3">
+            
+            {/* LEFT: Back + Title */}
+            <div className="flex items-center gap-3">
+              {onBack && (
+                <button
+                  onClick={onBack}
+                  className="p-2 hover:bg-gray-100 rounded-lg transition"
+                  aria-label="Geri"
+                >
+                  <ArrowLeft className="size-5 text-gray-700" />
+                </button>
+              )}
+
+              <div className="leading-tight">
+                <h1 className="text-lg sm:text-xl font-bold text-red-600">
+                  {t("menu.title")}
+                </h1>
+                <p className="hidden sm:block text-sm text-gray-600">
+                  {t("menu.welcome")}
+                </p>
+              </div>
+            </div>
+
+            {/* RIGHT: Language + Cart */}
+            <div className="flex items-center gap-2">
+              <LanguageSelector />
+
+              <button
+                onClick={() => setShowCart(true)}
+                className="relative bg-red-600 text-white p-2.5 rounded-full hover:bg-red-700 transition"
+              >
+                <ShoppingCart className="size-5" />
+                {cart.length > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-yellow-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold">
+                    {cart.reduce((sum, item) => sum + item.quantity, 0)}
+                  </span>
+                )}
               </button>
-            )}
-            <div>
-              <h1 className="text-2xl font-bold text-red-600">{t("menu.title")}</h1>
-              <p className="text-sm text-gray-600">{t("menu.welcome")}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2 relative">
-            <LanguageSelector />
-            <button onClick={() => setShowCart(true)} className="relative bg-red-600 text-white p-3 rounded-full hover:bg-red-700 transition">
-              <ShoppingCart className="size-6" />
-              {cart.length > 0 && (
-                <span className="absolute -top-2 -right-2 bg-yellow-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold">
-                  {cart.reduce((sum, item) => sum + item.quantity, 0)}
-                </span>
+
+          {/* SEARCH ROW */}
+          <div className="relative mt-3 md:mt-0 md:absolute md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 w-full md:max-w-md">
+            <div className="flex items-center bg-white rounded-full shadow-sm border border-gray-200 overflow-hidden">
+              <input
+                type="text"
+                placeholder={t("menu.searchPlaceholder")}
+                value={searchInput}
+                onChange={(e) => handleSearchInputChange(e.target.value)}
+                onFocus={() => searchInput && setShowSuggestions(true)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    setSearchQuery(searchInput);
+                    setShowSuggestions(false);
+                  }
+                }}
+                className="flex-1 px-4 py-2 sm:py-3 focus:outline-none text-sm"
+              />
+
+              {searchInput && (
+                <button
+                  onClick={() => setSearchInput("")}
+                  className="absolute right-20 sm:right-24 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  ✕
+                </button>
               )}
-            </button>
+
+              <button
+                onClick={() => {
+                  setSearchQuery(searchInput);
+                  setShowSuggestions(false);
+                }}
+                className="bg-red-600 text-white px-4 sm:px-6 py-2 sm:py-3 hover:bg-red-700 transition font-semibold text-sm"
+              >
+                {t("menu.searchBtn")}
+              </button>
+            </div>
+
+            {showSuggestions && suggestions.length > 0 && (
+              <div
+                onClick={(e) => e.stopPropagation()}
+                className="absolute top-full mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden"
+              >
+                {suggestions.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => {
+                      setSearchInput(item.name);
+                      setSearchQuery(item.name);
+                      setShowSuggestions(false);
+                    }}
+                    className="w-full px-4 py-3 hover:bg-red-50 transition flex items-center gap-3"
+                  >
+                    <img
+                      src={item.imageUrl}
+                      alt={item.name}
+                      className="w-9 h-9 rounded-md object-cover flex-shrink-0"
+                    />
+
+                    <div className="flex-1 text-left">
+                      <p className="font-medium text-gray-800 text-sm">
+                        {item.name}
+                      </p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {item.description}
+                      </p>
+                    </div>
+
+                    <span className="text-sm font-semibold text-gray-600">
+                      ₼{item.price.toFixed(2)}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
+
         </div>
       </header>
 
-      {/* Search & Filter */}
+
+      {/* Filter */}
       <div className="bg-gradient-to-r from-red-50 to-red-100 shadow-md">
-        <div className="max-w-7xl mx-auto px-4 py-6 flex flex-col lg:flex-row gap-6 items-center justify-center">
-
-        <div className="relative w-full max-w-md">
-          <div className="flex items-center bg-white rounded-full shadow-sm border border-gray-200 overflow-hidden">
-        <input
-          type="text"
-          placeholder={t("menu.searchPlaceholder")}
-          value={searchInput}
-          onChange={(e) => handleSearchInputChange(e.target.value)}
-          onFocus={() => searchInput && setShowSuggestions(true)}
-          onKeyDown={(e) => {
-            if(e.key === "Enter"){
-              setSearchQuery(searchInput);
-              setShowSuggestions(false);
-            }
-          }}
-          className="flex-1 px-4 py-3 focus:outline-none"
-        />
-
-         {searchInput && (
-          <button
-          onClick={() => setSearchInput("")}
-          className="absolute right-27 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-          > ✕ </button>
-         )}
-
-        <button
-          onClick={() => {
-            setSearchQuery(searchInput);
-            setShowSuggestions(false);
-          }}
-          className="bg-red-600 text-white px-6 py-3 hover:bg-red-700 transition font-semibold"
-        >
-          {t("menu.searchBtn")}
-        </button>
-          </div>
-
-      {showSuggestions && suggestions.length > 0 && (
         <div
-          onClick={(e) => e.stopPropagation()}
-          className="absolute top-full mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-lg z-50 overflow-hidden"
+          className="max-w-7xl mx-auto px-4 py-4
+                    flex flex-col gap-4
+                    lg:flex-row lg:justify-between lg:items-center"
         >
-          {suggestions.map((item) => (
-  <button
-    key={item.id}
-    onClick={() => {
-      setSearchInput(item.name);
-      setSearchQuery(item.name);
-      setShowSuggestions(false);
-    }}
-    className="w-full px-4 py-3 hover:bg-red-50 transition flex items-center gap-3"
-  >
-    <img
-      src={item.imageUrl}
-      alt={item.name}
-      className="w-10 h-10 rounded-md object-cover flex-shrink-0"
-    />
-
-    <div className="flex-1 text-left">
-      <p className="font-medium text-gray-800 leading-tight">
-        {item.name}
-      </p>
-      <p className="text-xs text-gray-500 truncate">
-        {item.description}
-      </p>
-    </div>
-
-    <span className="text-sm font-semibold text-gray-600 whitespace-nowrap">
-      ₼{item.price.toFixed(2)}
-    </span>
-  </button>
-))}
-
-        </div>
-      )}
-        </div>
-
-    <div className="flex flex-col gap-2 items-center">
-      <span className="text-gray-700 font-medium mb-1">
-        {t("menu.category")}
-      </span>
-      <div className="flex flex-wrap gap-2 justify-center">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
-            className={`px-4 py-2 rounded-full font-semibold border transition ${
-              selectedCategory === cat
-                ? "bg-red-600 text-white border-red-600 shadow-lg scale-105"
-                : "bg-white text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400"
-            }`}
-          >
-            {cat === "all"
-              ? t("menu.all")
-              : categoryMap[cat] || cat}
-          </button>
-        ))}
-      </div>
-    </div>
-
+          <div className="w-full">
+            <div
+              className="
+                flex gap-2
+                overflow-x-auto
+                flex-nowrap
+                justify-start
+                lg:justify-center lg:flex-wrap
+                no-scrollbar
+              "
+            >
+              {categories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`flex-shrink-0 px-4 py-2 rounded-full font-semibold border transition ${
+                    selectedCategory === cat
+                      ? "bg-red-600 text-white border-red-600 shadow-lg scale-105"
+                      : "bg-white text-red-600 border-red-300 hover:bg-red-50 hover:border-red-400"
+                  }`}
+                >
+                  {cat === "all"
+                    ? t("menu.all")
+                    : categoryMap[cat] || cat}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
+
 
       {/* Menu Grid */}
       <main className="max-w-7xl mx-auto px-4 py-8">
@@ -318,7 +352,7 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
             <div key={item.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition">
               <div className="relative">
                 {item.category.toLowerCase() === "xüsusi təkliflər" && (
-                  <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md z-10">
+                  <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md z-1">
                     {t("menu.specialOffer")}
                   </span>
                 )}
@@ -347,14 +381,13 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
 
       {/* Cart Modal */}
       {showCart && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="fixed inset-0 backdrop-blur-md flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto no-scrollbar">
             <div className="p-6">
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-2xl font-bold">{t("cart.title")}</h2>
                 <button onClick={() => setShowCart(false)} className="text-gray-500 hover:text-gray-700 text-2xl">×</button>
               </div>
-
               {orderSuccess ? (
                 <div className="text-center py-12">
                   <CircleCheckBig className="size-20 text-green-500 mx-auto mb-4" />
@@ -407,63 +440,59 @@ const MenuView: React.FC<MenuViewProps> = ({ onBack }) => {
 
       {/* Product Detail Bottom Sheet */}
       {selectedProduct && (
-  <div
-    className="fixed inset-0 bg-black/40 z-50 flex items-end justify-center"
-    onClick={() => setSelectedProduct(null)}
-  >
-    <div
-      className="bg-white w-full md:w-full rounded-t-2xl p-6 max-h-[85vh] overflow-y-auto animate-slideUp"
-      onClick={(e) => e.stopPropagation()}
-    >
-      {/* Header */}
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">{selectedProduct.name}</h2>
-        <button
+        <div
+          className="fixed inset-0 bg-black/40 z-50 flex items-end justify-center"
           onClick={() => setSelectedProduct(null)}
-          className="text-gray-500 text-2xl"
         >
-          ×
-        </button>
-      </div>
+          <div
+            className="bg-white w-full md:w-full rounded-t-2xl p-6 max-h-[85vh] overflow-y-auto animate-slideUp"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold">{selectedProduct.name}</h2>
+              <button
+                onClick={() => setSelectedProduct(null)}
+                className="text-gray-500 text-2xl"
+              >
+                ×
+              </button>
+            </div>
 
-      {/* Content: Image left, Info right */}
-      <div className="flex flex-col md:flex-row gap-4">
-        {/* Image */}
-        <img
-          src={selectedProduct.imageUrl}
-          alt={selectedProduct.name}
-          className="w-90 h-60 object-cover cursor-pointer rounded-lg"
-        />
+            <div className="flex flex-col md:flex-row gap-4">
+              <img
+                src={selectedProduct.imageUrl}
+                alt={selectedProduct.name}
+                className="w-full md:w-64 h-60 object-cover rounded-lg"
+              />
 
-        {/* Info */}
-        <div className="flex-1 flex flex-col justify-between">
-          <div>
-            <p className="text-gray-600 mb-4">{selectedProduct.description}</p>
-            <p className="text-gray-500 mb-2">
-              {t("menu.category")} {selectedProduct.category}
-            </p>
-          </div>
+              <div className="flex-1 flex flex-col justify-between">
+                <div>
+                  <p className="text-gray-600 mb-4">{selectedProduct.description}</p>
+                  <p className="text-gray-500 mb-2">
+                    {t("menu.category")} {selectedProduct.category}
+                  </p>
+                </div>
 
-          {/* Price & Add to Cart */}
-          <div className="flex justify-between items-center mt-4">
-            <span className="text-2xl font-bold text-red-600">
-              ₼{selectedProduct.price.toFixed(2)}
-            </span>
-            <button
-              onClick={() => {
-                addToCart(selectedProduct);
-                setSelectedProduct(null);
-              }}
-              className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition"
-            >
-              {t("menu.addToCart")}
-            </button>
+                <div className="flex justify-between items-center mt-4">
+                  <span className="text-2xl font-bold text-red-600">
+                    ₼{selectedProduct.price.toFixed(2)}
+                  </span>
+                  <button
+                    onClick={() => {
+                      addToCart(selectedProduct);
+                      setSelectedProduct(null);
+                    }}
+                    className="bg-red-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-700 transition"
+                  >
+                    {t("menu.addToCart")}
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-)}
+      )}
 
     </div>
   );

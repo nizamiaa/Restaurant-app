@@ -57,6 +57,7 @@
     "allRightsReserved": "All rights reserved."
   },
   "feedback": {
+    "feedbacksCount": "Count of feedbacks: ",
       "fillRequiredFields": "Please enter your name and message",
       "thankYou": "Thank you for your feedback!",
       "submissionFailed": "Error occurred while submitting feedback",

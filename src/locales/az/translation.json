@@ -62,6 +62,7 @@
   },
 
   "feedback": {
+    "feedbacksCount": "Rəylərin sayı: ",
     "fillRequiredFields": "Zəhmət olmasa adınızı və mesajınızı daxil edin",
     "thankYou": "Rəyiniz üçün təşəkkür edirik!",
     "submissionFailed": "Rəy göndərilərkən xəta baş verdi",

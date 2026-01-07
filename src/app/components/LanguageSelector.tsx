@@ -44,16 +44,26 @@ export const LanguageSelector: React.FC = () => {
     <div ref={ref} className="relative select-none">
       <button
         onClick={() => setOpen((o) => !o)}
-        className="relative p-3 rounded-full"
+        className="
+          relative flex-shrink-0
+          p-2 sm:p-3
+          rounded-full
+        "
         aria-haspopup="dialog"
         aria-expanded={open}
       >
         <img
           src={current.flag}
           alt={current.label}
-          className="w-12 h-12 rounded-full border"
+          className="
+            w-8 h-8
+            sm:w-10 sm:h-10
+            lg:w-12 lg:h-12
+            rounded-full border
+          "
         />
       </button>
+
 
       {open && (
         <div

@@ -133,18 +133,22 @@ export function Feedback({ onBack }: FeedbackProps) {
             </p>
           </div>
 
-          {/* Ortalama Rating */}
           <div className="mb-6 text-center">
             <h2 className="text-xl font-bold">{t('feedback.averageRating') || "Orta Reytinq"}</h2>
             <div className="flex justify-center items-center gap-1 mt-2">
               {[1,2,3,4,5].map((star) => (
                 <span key={star} className={star <= Math.round(averageRating) ? "text-yellow-400" : "text-gray-300"}>★</span>
               ))}
-              <span className="ml-2 text-gray-700">{averageRating.toFixed(1)} / 5</span>
+              <span className="ml-2 text-gray-700">
+                {averageRating.toFixed(1)} / 5
+                <span className="ml-2 text-sm text-gray-500">
+                  ({t('feedback.feedbacksCount')} {allFeedback.length})
+                </span>
+              </span>
             </div>
           </div>
 
-          {/* Rating seçimi */}
+
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               {t('feedback.rating') || 'Rating'}
